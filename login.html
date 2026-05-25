@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="login.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="sign-up">
+        <h1>Sign Up</h1>
+
+        <form>
+
+            <div class="input-container">
+                <input type="text" id="name" name="name" placeholder="" required>
+                <label for="name">Name</label>
+            </div>
+
+            <div class="input-container">
+                <input type="email" id="sign-up-email" name="email" placeholder="" required>
+                <label for="sign-up-email">Email</label>
+            </div>
+
+            <div class="input-container">
+                <input type="text" id="school" name="school" placeholder="" autocomplete="off" required>
+                <label for="school">School</label>
+                <div id="schools-list" class="hidden"></div>
+            </div>
+
+            <div class="input-container">
+                <input type="password" id="sign-up-password" name="password" placeholder="" required>
+                <i class="password-toggle fa-regular fa-eye" class="password-toggle"></i>
+                <label for="sign-up-password">Password</label>
+            </div>
+
+            <button>Sign Up</button>
+        </form>
+
+        <div class="redirect">
+            <span>Already have an account?</span>
+            <button id="to-login-btn" class="redirect-btn">Login</button>
+        </div>
+
+        <div class="divider">or</div>
+        <div id="google-sign-up" class="google-btn"></div>
+
+    </div>
+
+    <div id="login" class="hidden">
+        <h1>Login</h1>
+
+        <form>
+            <div class="input-container">
+                <input type="email" id="login-email" name="email" placeholder="" required>
+                <label for="login-email">Email</label>
+            </div>
+
+            <div class="input-container">
+                <input type="password" id="login-password" name="password" placeholder="" required>
+                <i class="password-toggle fa-regular fa-eye"></i>
+                <label for="login-password">Password</label>
+            </div>
+
+            <div class="forgot-password">
+                <a id="forgot-password-btn" href="forgot-password.html">Forgot Password?</a>
+            </div>
+
+            <button>Login</button>
+        </form>
+
+        <div class="redirect">
+            <span>Don't have an account?</span>
+            <button id="to-sign-up-btn" class="redirect-btn">Sign up</button>
+        </div>
+
+        <div class="divider">or</div>
+        <div id="google-login" class="google-btn"></div>
+
+    </div>
+
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="login.js"></script>
+</body>
+
+</html>
