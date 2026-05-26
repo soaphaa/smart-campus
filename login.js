@@ -9,26 +9,53 @@ const schoolsList = document.getElementById("schools-list");
 const passwordToggles = document.querySelectorAll(".password-toggle");
 const forgotPasswordBtn = document.getElementById("forgot-password-btn");
 
-toLoginBtn.addEventListener("click", () => {
+window.addEventListener("DOMContentLoaded", () => {
+    handleHashChange();
+});
+
+window.addEventListener("hashchange", () => {
+    handleHashChange();
+});
+
+function handleHashChange() {
+    login.classList.add("hidden");
     signUp.classList.add("hidden");
-    login.classList.remove("hidden");
+    
+    const hash = window.location.hash;
+
+    if (hash === "#login") {
+        login.classList.remove("hidden");
+    } else if (hash === "#signup") {
+        signUp.classList.remove("hidden");
+    }
 
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
         setTimeout(() => {
             renderGoogleButtons();
         }, 0);
     }
+}
+
+function goBackToPreviousPage(event) {
+    event.preventDefault();
+
+    const path = window.location.origin + window.location.pathname;
+    if (document.referrer && document.referrer !== currentPath && !document.referrer.includes(window.location.pathname)) {
+        window.location.href = document.referrer;
+    } else {
+        window.location.href = "index.html";
+    }
+}
+
+toLoginBtn.addEventListener("click", () => {
+    // window.location.hash = "#login";
+    window.history.replaceState(null, "", "#login");
+    handleHashChange();
 });
 
 toSignUpBtn.addEventListener("click", () => {
-    signUp.classList.remove("hidden");
-    login.classList.add("hidden");
-
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        setTimeout(() => {
-            renderGoogleButtons();
-        }, 0);
-    }
+    window.history.replaceState(null, "", "#signup");
+    handleHashChange();
 });
 
 passwordToggles.forEach(toggle => {

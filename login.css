@@ -6,30 +6,11 @@
     --text-main: #1e293b;
     --text-prompt: #94a3b8;
     --border-radius: 1rem;
+    --font-size-heading: clamp(1.5rem, 12vmin, 2.8rem);
     --font-size-input: clamp(1.5rem, 5.5vmin, 3rem);
     --font-size-prompt: clamp(1.2rem, 3vmin, 2.5rem);
-    --font-size-text: clamp(1.2rem, 2vmin, 2rem);
+    --font-size-text: clamp(1.2rem, 2.5vmin, 2.2rem);
 }
-
-@media (min-width: 600px) {
-    :root {
-        --font-size-input: clamp(1rem, 3vmin, 3rem);
-        --font-size-prompt: clamp(1.2rem, 2vmin, 2.5rem);
-    }
-
-    #sign-up,
-    #login {
-        max-width: 50vmin;
-        max-height: 80vh;
-        padding: 3rem 2.5rem;
-        background: white;
-        border-radius: var(--border-radius);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
-            0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    }
-}
-
-@media (min-width: 1024px) {}
 
 body {
     height: 100vh;
@@ -60,12 +41,16 @@ button {
     transition: all 0.2s;
 }
 
-button:focus {
+button:hover,
+a:hover {
     filter: brightness(90%);
 }
 
 #sign-up,
-#login {
+#login,
+#forgot-password,
+#password-reset,
+#reset-error {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -73,6 +58,7 @@ button:focus {
     align-items: center;
     font-size: var(--font-size-input);
     gap: 1rem;
+    position: static;
 }
 
 .hidden {
@@ -80,8 +66,15 @@ button:focus {
 }
 
 h1 {
+    font-size: var(--font-size-heading);
     margin-top: 0;
     margin-bottom: 0.5rem;
+}
+
+p {
+    margin-top: 0;
+    text-align: center;
+    font-size: var(--font-size-text);
 }
 
 form {
@@ -154,6 +147,17 @@ input[type="password"]::-ms-clear {
     padding: 0 0.3rem;
 }
 
+.back-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    font-size: var(--font-size-text);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
 #schools-list {
     position: absolute;
     top: 100%;
@@ -205,7 +209,8 @@ input[type="password"]::-ms-clear {
 }
 
 #sign-up-password,
-#login-password {
+#login-password,
+#reset-password {
     padding-right: 3rem;
 }
 
@@ -232,12 +237,8 @@ input[type="password"]::-ms-clear {
     justify-content: flex-end;
     margin: -0.7rem;
     margin-bottom: 0.3rem;
-}
-
-.forgot-password a {
     font-size: var(--font-size-text);
-    color: var(--primary-color);
-    text-decoration: none;
+
 }
 
 .redirect {
@@ -255,7 +256,7 @@ input[type="password"]::-ms-clear {
     display: inline;
     background: none;
     color: var(--primary-color);
-    /* text-decoration: underline; */
+    text-decoration: none;
     padding: 0;
 
     font-size: inherit;
@@ -296,3 +297,34 @@ input[type="password"]::-ms-clear {
 .divider::after {
     margin-left: 1rem;
 }
+
+#error-message {
+    font-size: var(--font-size-input);
+    /* color: red; */
+}
+
+@media (min-width: 600px) {
+    :root {
+        --font-size-heading: clamp(1.5rem, 5vmin, 3rem);
+        --font-size-input: clamp(1rem, 3vmin, 3rem);
+        --font-size-prompt: clamp(1.2rem, 2vmin, 2.5rem);
+    }
+
+    #sign-up,
+    #login,
+    #forgot-password,
+    #password-reset,
+    #reset-error {
+        max-width: 50vmin;
+        max-height: 80vh;
+        padding: 3rem 2.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
+            0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        position: relative;
+
+    }
+}
+
+@media (min-width: 1024px) {}

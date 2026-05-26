@@ -11,6 +11,11 @@
 
 <body>
     <div id="sign-up">
+        <a href="#" onclick="goBackToPreviousPage(event)" class="back-btn">
+            <i class="fa-solid fa-angle-left"></i>
+            <span>Back</span>
+        </a>
+
         <h1>Sign Up</h1>
 
         <form>
@@ -32,8 +37,9 @@
             </div>
 
             <div class="input-container">
-                <input type="password" id="sign-up-password" name="password" placeholder="" required>
-                <i class="password-toggle fa-regular fa-eye" class="password-toggle"></i>
+                <input type="password" id="sign-up-password" name="password" placeholder="" autocomplete="new-password"
+                    required>
+                <i class="password-toggle fa-regular fa-eye"></i>
                 <label for="sign-up-password">Password</label>
             </div>
 
@@ -50,7 +56,12 @@
 
     </div>
 
-    <div id="login" class="hidden">
+    <div id="login">
+        <a href="#" onclick="goBackToPreviousPage(event)" class="back-btn">
+            <i class="fa-solid fa-angle-left"></i>
+            <span>Back</span>
+        </a>
+
         <h1>Login</h1>
 
         <form>
@@ -60,13 +71,14 @@
             </div>
 
             <div class="input-container">
-                <input type="password" id="login-password" name="password" placeholder="" required>
+                <input type="password" id="login-password" name="password" placeholder=""
+                    autocomplete="current-password" required>
                 <i class="password-toggle fa-regular fa-eye"></i>
                 <label for="login-password">Password</label>
             </div>
 
             <div class="forgot-password">
-                <a id="forgot-password-btn" href="forgot-password.html">Forgot Password?</a>
+                <a id="forgot-password-btn" class="redirect-btn" href="forgot-password.html#forgot-password">Forgot Password?</a>
             </div>
 
             <button>Login</button>
