@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div id="sign-up">
+    <div id="sign-up" class="hidden">
         <a href="#" onclick="goBackToPreviousPage(event)" class="back-btn">
             <i class="fa-solid fa-angle-left"></i>
             <span>Back</span>
@@ -36,6 +36,7 @@
                 <div id="schools-list" class="hidden"></div>
             </div>
 
+            <!-- password restrictions -->
             <div class="input-container">
                 <input type="password" id="sign-up-password" name="password" placeholder="" autocomplete="new-password"
                     required>
@@ -56,7 +57,7 @@
 
     </div>
 
-    <div id="login">
+    <div id="login" class="hidden">
         <a href="#" onclick="goBackToPreviousPage(event)" class="back-btn">
             <i class="fa-solid fa-angle-left"></i>
             <span>Back</span>

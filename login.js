@@ -40,7 +40,7 @@ function goBackToPreviousPage(event) {
     event.preventDefault();
 
     const path = window.location.origin + window.location.pathname;
-    if (document.referrer && document.referrer !== currentPath && !document.referrer.includes(window.location.pathname)) {
+    if (document.referrer && document.referrer !== path && !document.referrer.includes(window.location.pathname)) {
         window.location.href = document.referrer;
     } else {
         window.location.href = "index.html";
