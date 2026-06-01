@@ -36,10 +36,9 @@
                 <div id="schools-list" class="hidden"></div>
             </div>
 
-            <!-- password restrictions -->
             <div class="input-container">
                 <input type="password" id="sign-up-password" name="password" placeholder="" autocomplete="new-password"
-                    required>
+                    minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
                 <i class="password-toggle fa-regular fa-eye"></i>
                 <label for="sign-up-password">Password</label>
             </div>
@@ -79,7 +78,8 @@
             </div>
 
             <div class="forgot-password">
-                <a id="forgot-password-btn" class="redirect-btn" href="forgot-password.html#forgot-password">Forgot Password?</a>
+                <a id="forgot-password-btn" class="redirect-btn" href="forgot-password.html#forgot-password">Forgot
+                    Password?</a>
             </div>
 
             <button>Login</button>
@@ -96,7 +96,13 @@
     </div>
 
     <script src="https://accounts.google.com/gsi/client"></script>
-    <script src="login.js"></script>
+    <script type="module" src="login.js"></script>
+
+    <script type="module">
+        import { authentication } from './firebase-config.js';
+        // import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    </script>
+
 </body>
 
 </html>

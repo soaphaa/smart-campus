@@ -2,14 +2,15 @@
     --primary-color: #4f46e5;
     --background-color: #f8fafc;
     --border-color: #e2e8f0;
-    --border-focus: #4f46e5;
+    --border-focus: #5dc9a5;
     --text-main: #1e293b;
-    --text-prompt: #94a3b8;
+    --text-accent: #5dc9a5;
+    --text-prompt: #727f91;
     --border-radius: 1rem;
     --font-size-heading: clamp(1.5rem, 12vmin, 2.8rem);
-    --font-size-input: clamp(1.5rem, 5.5vmin, 3rem);
-    --font-size-prompt: clamp(1.2rem, 3vmin, 2.5rem);
-    --font-size-text: clamp(1.2rem, 2.5vmin, 2.2rem);
+    --font-size-input: clamp(1.5rem, 6vmin, 3rem);
+    --font-size-prompt: clamp(1.2rem, 5.5vmin, 2.5rem);
+    --font-size-text: clamp(1.2rem, 5.2vmin, 2.2rem);
 }
 
 body {
@@ -33,12 +34,14 @@ button {
     font-weight: 600;
     color: white;
 
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--text-accent) 100%);
+    /* background-size: 200% auto; */
     border-radius: var(--border-radius);
     border: none;
+    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
 
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 button:hover {
@@ -70,6 +73,7 @@ a:hover {
 
 h1 {
     font-size: var(--font-size-heading);
+    color: var(--text-main);
     margin-top: 0;
     margin-bottom: 0.5rem;
 }
@@ -115,18 +119,19 @@ input[type="password"]::-ms-clear {
 
     font-size: var(--font-size-input);
     color: var(--text-main);
-    background-color: var(--background-color);
+    background-color: white;
     transition: all 0.2s ease-in-out;
 }
 
-.input-container input:focus,
-.input-container input:not(:placeholder-shown) {
+.input-container input:focus {
+    background-color: var(--background-color);
     border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px #5dc9a51a;
 }
 
-.input-container input:focus {
-    background-color: white;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+.input-container input:not(:placeholder-shown) {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px #4f46e51a;
 }
 
 .input-container label {
@@ -145,9 +150,16 @@ input[type="password"]::-ms-clear {
     top: 0;
     font-size: var(--font-size-prompt);
     font-weight: 600;
-    color: var(--primary-color);
     background-color: #ffffff;
     padding: 0 0.3rem;
+}
+
+.input-container input:focus~label {
+    color: var(--text-accent);
+}
+
+.input-container input:not(:placeholder-shown)~label {
+    color: var(--primary-color);
 }
 
 .back-btn {
@@ -261,10 +273,13 @@ input[type="password"]::-ms-clear {
     color: var(--primary-color);
     text-decoration: none;
     padding: 0;
+    box-shadow: none;
+
 
     font-size: inherit;
     font-family: inherit;
     font-weight: inherit;
+
 }
 
 .google-btn {
@@ -279,8 +294,8 @@ input[type="password"]::-ms-clear {
     align-items: center;
     text-align: center;
 
-    color: var(--text-prompt);
-    font-size: 0.875rem;
+    color: var(--text-main);
+    font-size: var(--font-size-text);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -310,7 +325,8 @@ input[type="password"]::-ms-clear {
     :root {
         --font-size-heading: clamp(1.5rem, 5vmin, 3rem);
         --font-size-input: clamp(1rem, 3vmin, 3rem);
-        --font-size-prompt: clamp(1.2rem, 2vmin, 2.5rem);
+        --font-size-prompt: clamp(1.2rem, 2.7vmin, 2.5rem);
+        --font-size-text: clamp(1.2rem, 3vmin, 2.5rem);
     }
 
     #sign-up,

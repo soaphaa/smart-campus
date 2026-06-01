@@ -1,13 +1,25 @@
+import { authentication, database } from "./firebase-config.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
 const signUp = document.getElementById("sign-up");
 const login = document.getElementById("login");
 const toLoginBtn = document.getElementById("to-login-btn");
 const toSignUpBtn = document.getElementById("to-sign-up-btn");
 const googleSignUp = document.getElementById("google-sign-up");
 const googleLogin = document.getElementById("google-login");
-const schoolInput = document.getElementById("school");
-const schoolsList = document.getElementById("schools-list");
+
 const passwordToggles = document.querySelectorAll(".password-toggle");
 const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+
+const nameInput = document.getElementById("name");
+const signUpEmailInput = document.getElementById("sign-up-email");
+const signUpPasswordInput = document.getElementById("sign-up-password");
+const schoolInput = document.getElementById("school");
+const schoolsList = document.getElementById("schools-list");
+
+const loginEmailInput = document.getElementById("login-email");
+const loginPasswordInput = document.getElementById("login-password");
 
 window.addEventListener("DOMContentLoaded", () => {
     handleHashChange();
@@ -20,7 +32,7 @@ window.addEventListener("hashchange", () => {
 function handleHashChange() {
     login.classList.add("hidden");
     signUp.classList.add("hidden");
-    
+
     const hash = window.location.hash;
 
     if (hash === "#login") {
@@ -56,6 +68,61 @@ toLoginBtn.addEventListener("click", () => {
 toSignUpBtn.addEventListener("click", () => {
     window.history.replaceState(null, "", "#signup");
     handleHashChange();
+});
+
+
+signUp.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = nameInput.value;
+    const email = signUpEmailInput.value;
+    const school = schoolInput.value;
+    const password = signUpPasswordInput.value;
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(authentication, email, password);
+        const user = userCredential.user;
+
+        await setDoc(doc(database, "users", user.uid), {
+            name: name,
+            email: email,
+            school: school,
+            dateCreated: new Date().toISOString()
+        });
+        window.location.href = "home.html"
+    } catch (error) {
+        // console.error("Sign up error: ", error.code);
+        if (error.code === "auth/email-already-in-use") {
+            alert("An account with this email already exists. Try logging in instead.");
+            window.location.hash = "#login";
+        } else if (error.code === "auth/weak-password") {
+            alert("Password should be at least 6 characters long.");
+        } else {
+            alert("Sign up failed. Please try again.\nError: " + error.message);
+        }
+    }
+});
+
+login.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = loginEmailInput.value;
+    const password = loginPasswordInput.value;
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(authentication, email, password);
+        window.location.href = "home.html"
+    } catch (error) {
+        // console.error("Login error: ", error.code);
+
+        if (error.code === "auth/invalid-credential") {
+            alert("Invalid email or password. Please try again.");
+        } else if (error.code === "auth/user-not-found") {
+            alert("No account found with this email. Please sign up first.");
+        } else {
+            alert("Login failed. Please try again. \nError: " + error.message);
+        }
+    }
 });
 
 passwordToggles.forEach(toggle => {
