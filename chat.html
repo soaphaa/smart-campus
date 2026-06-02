@@ -7,36 +7,47 @@
     <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="chat.css">
 </head>
-<body class="chat-page">
+<body>
 
     <div id="app">
 
         <aside id="sidebar">
             <div id="sidebar-header">
                 <h2>Messages</h2>
+                <button id="new-chat-btn">+ New</button>
             </div>
             <ul id="conv-list"></ul>
         </aside>
 
         <main id="main">
-
-            <div id="empty-state">
-                <p>Select a conversation</p>
-            </div>
+            <div id="empty-state"><p>Select a conversation or start a new one</p></div>
 
             <div id="chat-view" class="hidden">
                 <div id="chat-header">
-                    <button id="back-btn" class="ghost-btn">← Back</button>
+                    <button id="back-btn">← Back</button>
                     <span id="chat-name"></span>
                 </div>
                 <div id="messages"></div>
                 <form id="msg-form">
-                    <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
+                    <div class="input-container">
+                        <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
+                    </div>
                     <button type="submit">Send</button>
                 </form>
             </div>
-
         </main>
+
+    </div>
+
+    <!-- New chat modal -->
+    <div id="new-chat-modal" class="hidden">
+        <div id="modal-box">
+            <div id="modal-header">
+                <span>Start a conversation</span>
+                <button id="modal-close">✕</button>
+            </div>
+            <ul id="user-list"></ul>
+        </div>
     </div>
 
     <script type="module" src="chat.js"></script>
