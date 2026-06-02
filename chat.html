@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages</title>
     <link rel="stylesheet" href="login.css">
-    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="chat.css">
 </head>
+<body class="chat-page">
 
-<body>
-    <div id="send-message">
+    <div id="app">
 
-        <h1>Send</h1>
+        <aside id="sidebar">
+            <div id="sidebar-header">
+                <h2>Messages</h2>
+            </div>
+            <ul id="conv-list"></ul>
+        </aside>
 
-        <form>
-            <div class="input-container">
-                <input type="text" id="chatbox" name="chatbox" placeholder="" required>
-                <label for="reset-email">send message</label>
+        <main id="main">
+
+            <div id="empty-state">
+                <p>Select a conversation</p>
             </div>
 
-            <button>Continue</button>
-        </form>
+            <div id="chat-view" class="hidden">
+                <div id="chat-header">
+                    <button id="back-btn" class="ghost-btn">← Back</button>
+                    <span id="chat-name"></span>
+                </div>
+                <div id="messages"></div>
+                <form id="msg-form">
+                    <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
 
+        </main>
     </div>
 
-    <script src="chat.js"></script>
+    <script type="module" src="chat.js"></script>
 </body>
-
 </html>
