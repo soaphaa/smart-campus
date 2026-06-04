@@ -1,0 +1,349 @@
+:root {
+    --primary-color: #4f46e5;
+    --background-color: #f8fafc;
+    --border-color: #e2e8f0;
+    --border-focus: #5dc9a5;
+    --text-main: #1e293b;
+    --text-accent: #5dc9a5;
+    --text-prompt: #727f91;
+    --border-radius: 1rem;
+    --font-size-heading: clamp(1.5rem, 12vmin, 2.8rem);
+    --font-size-input: clamp(1.5rem, 6vmin, 3rem);
+    --font-size-prompt: clamp(1.2rem, 5.5vmin, 2.5rem);
+    --font-size-text: clamp(1.2rem, 5.2vmin, 2.2rem);
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    margin: 0 2rem;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background-color: rgb(254, 254, 254);
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+
+    font-size: var(--font-size-input);
+    font-weight: 600;
+    color: white;
+
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--text-accent) 100%);
+    /* background-size: 200% auto; */
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+    filter: brightness(90%);
+}
+
+a:hover {
+    filter: brightness(70%);
+}
+
+#sign-up,
+#login,
+#forgot-password,
+#password-reset,
+#reset-error {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-input);
+    gap: 1rem;
+    position: static;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: var(--font-size-heading);
+    color: var(--text-main);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    margin-top: 0;
+    text-align: center;
+    font-size: var(--font-size-text);
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+.input-container {
+    position: relative;
+}
+
+.input-container input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.2rem 1rem;
+
+    border: 0.1rem solid var(--border-color);
+    border-radius: var(--border-radius);
+    outline: none;
+
+    font-size: var(--font-size-input);
+    color: var(--text-main);
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.input-container input:focus {
+    background-color: var(--background-color);
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px #5dc9a51a;
+}
+
+.input-container input:not(:placeholder-shown) {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px #4f46e51a;
+}
+
+.input-container label {
+    position: absolute;
+    left: 1.3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-prompt);
+    font-size: var(--font-size-input);
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.input-container input:focus~label,
+.input-container input:not(:placeholder-shown)~label {
+    top: 0;
+    font-size: var(--font-size-prompt);
+    font-weight: 600;
+    background-color: #ffffff;
+    padding: 0 0.3rem;
+}
+
+.input-container input:focus~label {
+    color: var(--text-accent);
+}
+
+.input-container input:not(:placeholder-shown)~label {
+    color: var(--primary-color);
+}
+
+.back-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    font-size: var(--font-size-text);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+#schools-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+
+    background-color: var(--background-color);
+    border: 0.1rem solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+#schools-list::-webkit-scrollbar {
+    width: 0.4rem
+}
+
+#schools-list::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0.5rem 0;
+}
+
+#schools-list::-webkit-scrollbar-thumb {
+    background-color: var(--text-prompt);
+    border-radius: var(--border-radius);
+}
+
+#schools-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color);
+}
+
+.school-option {
+    padding: 0.8rem 1rem;
+    font-size: var(--font-size-text, 1rem);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    background-color: var(--background-color);
+}
+
+.school-option:hover {
+    filter: brightness(90%);
+}
+
+#sign-up-password,
+#login-password,
+#reset-password {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: var(--font-size-prompt);
+    color: var(--text-prompt);
+
+    cursor: pointer;
+    transition: color 0.2 ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+.forgot-password {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: -0.7rem;
+    margin-bottom: 0.3rem;
+    font-size: var(--font-size-text);
+
+}
+
+.redirect {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: var(--font-size-text);
+}
+
+.redirect-btn {
+    width: max-content;
+    display: inline;
+    background: none;
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 0;
+    box-shadow: none;
+
+
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+
+}
+
+.google-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+
+    color: var(--text-main);
+    font-size: var(--font-size-text);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.divider::before {
+    margin-right: 1rem;
+}
+
+.divider::after {
+    margin-left: 1rem;
+}
+
+#error-message {
+    font-size: var(--font-size-input);
+    /* color: red; */
+}
+
+@media (min-width: 600px) {
+    :root {
+        --font-size-heading: clamp(1.5rem, 5vmin, 3rem);
+        --font-size-input: clamp(1rem, 3vmin, 3rem);
+        --font-size-prompt: clamp(1.2rem, 2.7vmin, 2.5rem);
+        --font-size-text: clamp(1.2rem, 3vmin, 2.5rem);
+    }
+
+    #sign-up,
+    #login,
+    #forgot-password,
+    #password-reset,
+    #reset-error {
+        max-width: 50vmin;
+        max-height: 80vh;
+        padding: 3rem 2.5rem;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
+            0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        position: relative;
+
+    }
+}
+
+@media (min-width: 1024px) {}
