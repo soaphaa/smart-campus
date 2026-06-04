@@ -1,186 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Campus</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap">
-    <link rel="stylesheet" href="login.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commercium — Campus Marketplace</title>
     <link rel="stylesheet" href="home.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
+    <header id="topbar">
+        <div id="brand">Commercium</div>
 
-<nav>
-    <div class="nav-logo">Smart Campus</div>
-    <div class="nav-actions">
-        <button class="btn-ghost" onclick="window.location.href='login.html#login'">Log in</button>
-        <button class="btn-primary" onclick="window.location.href='login.html#signup'">Sign up</button>
-    </div>
-</nav>
+        <div id="search-wrap">
+            <i id="search-icon" class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Search items, courses, materials..." autocomplete="off">
+            <div id="search-suggestions" class="hidden"></div>
+        </div>
 
-<main>
+        <div class="topbar-actions">
+            <button id="filters-btn" title="Filters">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Filters</span>
+                <span id="filter-count" class="hidden">0</span>
+            </button>
+            <button id="sell-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span>&nbsp;Sell</span>
+            </button>
+            <button id="messages-btn" class="icon-btn" title="Messages">
+                <i class="fa-regular fa-comment"></i>
+            </button>
+            <button id="logout-btn" class="icon-btn" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </header>
 
-    <section class="hero">
-        <div class="hero-eyebrow reveal reveal-1">
-            <span class="live-dot"></span>
-        </div>
-        <h1 class="reveal reveal-2">Buy, sell, & trade<br></h1>
-        <p class="reveal reveal-3">One student's trash is another's treasure.</p>
-        <div class="hero-cta reveal reveal-4">
-            <button class="btn-hero" onclick="window.location.href='login.html#signup'">Get Started Free</button>
-            <button class="btn-hero-outline" onclick="window.location.href='#browse'">Browse Listings</button>
-        </div>
-    </section>
+    <nav id="category-row">
+        <button class="chip active" data-category="all">All</button>
+        <button class="chip" data-category="new">New</button>
+        <button class="chip" data-category="used">Second-hand</button>
+        <button class="chip" data-category="rent">Rent</button>
+        <button class="chip" data-category="exchange">Exchange</button>
+    </nav>
 
-    <p class="section-label reveal reveal-5">What do you want to do?</p>
+    <div id="active-filters"></div>
 
-    <div class="actions-grid">
-        <a class="action-card reveal" style="animation-delay:0.32s" href="listings.html">
-            <div class="action-icon icon-indigo"></div>
-            <div class="action-title">Buy</div>
-            <div class="action-sub">Second-hand &amp; new items</div>
-        </a>
-        <a class="action-card reveal" style="animation-delay:0.38s" href="listings.html?type=rent">
-            <div class="action-icon icon-teal"></div>
-            <div class="action-title">Rent</div>
-            <div class="action-sub">Day, week, or month</div>
-        </a>
-        <a class="action-card reveal" style="animation-delay:0.44s" href="listings.html?type=trade">
-            <div class="action-icon icon-amber"></div>
-            <div class="action-title">Trade</div>
-            <div class="action-sub">Exchange with others</div>
-        </a>
-        <a class="action-card reveal" style="animation-delay:0.50s" href="sell.html">
-            <div class="action-icon icon-rose"></div>
-            <div class="action-title">Sell</div>
-            <div class="action-sub">List your item now</div>
-        </a>
-        <a class="action-card full-width reveal" style="animation-delay:0.56s" href="chat.html">
-            <div class="action-icon icon-sky"></div>
-            <div>
-                <div class="action-title">Messages</div>
-                <div class="action-sub">Chat with buyers &amp; sellers</div>
-            </div>
-            <div class="action-badge">Live</div>
-        </a>
-    </div>
+    <main id="grid">
+        <div id="loading">Loading listings...</div>
+    </main>
 
-    <p class="section-label reveal reveal-5" id="browse">Featured near you</p>
+    <!-- Filter drawer -->
+    <div id="filter-drawer">
+        <div class="drawer-overlay"></div>
+        <aside class="drawer-panel">
+            <div class="drawer-header">
+                <h2>Filters</h2>
+                <button class="drawer-close" id="drawer-close" title="Close">✕</button>
+            </div>
 
-    <div class="listings-scroll reveal reveal-6">
-        <div class="listing-card">
-            <div class="listing-img"></div>
-            <div class="listing-body">
-                <span class="listing-tag tag-buy">Buy</span>
-                <div class="listing-title">TI-84 Plus CE</div>
-                <div class="listing-price">$42</div>
-            </div>
-        </div>
-        <div class="listing-card">
-            <div class="listing-img"></div>
-            <div class="listing-body">
-                <span class="listing-tag tag-rent">Rent</span>
-                <div class="listing-title">Physics 12</div>
-                <div class="listing-price">$5</div>
-            </div>
-        </div>
-        <div class="listing-card">
-            <div class="listing-img"></div>
-            <div class="listing-body">
-                <span class="listing-tag tag-trade">Trade</span>
-                <div class="listing-title">Chem Notes</div>
-                <div class="listing-price">Trade</div>
-            </div>
-        </div>
-        <div class="listing-card">
-            <div class="listing-img"></div>
-            <div class="listing-body">
-                <span class="listing-tag tag-buy">Buy</span>
-                <div class="listing-title">Lab Kit</div>
-                <div class="listing-price">$18</div>
-            </div>
-        </div>
-        <div class="listing-card">
-            <div class="listing-img"></div>
-            <div class="listing-body">
-                <span class="listing-tag tag-buy">Buy</span>
-                <div class="listing-title">Backpack</div>
-                <div class="listing-price">$25</div>
-            </div>
-        </div>
-    </div>
+            <div class="drawer-body">
+                <section class="filter-section">
+                    <h3>Sort by</h3>
+                    <select id="sort-select">
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="price_asc">Price: low to high</option>
+                        <option value="price_desc">Price: high to low</option>
+                        <option value="views_desc">Most viewed</option>
+                    </select>
+                </section>
 
-    <p class="section-label reveal reveal-5">Your account</p>
+                <section class="filter-section">
+                    <h3>Price range</h3>
+                    <div class="price-range">
+                        <input type="number" id="min-price" min="0" placeholder="Min">
+                        <span class="dash">—</span>
+                        <input type="number" id="max-price" min="0" placeholder="Max">
+                    </div>
+                </section>
 
-    <div class="dashboard-card reveal reveal-6">
-        <div class="dashboard-header">
-            <span>Dashboard</span>
-            <a href="profile.html">View all →</a>
-        </div>
-        <div class="dashboard-rows">
-            <div class="dash-row" onclick="window.location.href='profile.html#savings'">
-                <div class="dash-icon icon-teal"></div>
-                <div class="dash-info">
-                    <div class="dash-title">Money Saved</div>
-                    <div class="dash-sub">This semester</div>
-                </div>
-                <div class="dash-value" id="dash-savings">$38.50</div>
+                <section class="filter-section">
+                    <h3>Material type</h3>
+                    <div class="checkbox-chips" data-group="materialTypes">
+                        <button type="button" class="filter-chip" data-value="Textbook">Textbook</button>
+                        <button type="button" class="filter-chip" data-value="Electronics">Electronics</button>
+                        <button type="button" class="filter-chip" data-value="Clothing">Clothing</button>
+                        <button type="button" class="filter-chip" data-value="Furniture">Furniture</button>
+                        <button type="button" class="filter-chip" data-value="Stationery">Stationery</button>
+                        <button type="button" class="filter-chip" data-value="Sports">Sports</button>
+                        <button type="button" class="filter-chip" data-value="Kitchen">Kitchen</button>
+                        <button type="button" class="filter-chip" data-value="Other">Other</button>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <h3>Course code</h3>
+                    <input type="text" id="course-filter" placeholder="e.g. MATH 1019" autocomplete="off">
+                </section>
+
+                <section class="filter-section">
+                    <h3>Teacher</h3>
+                    <input type="text" id="teacher-filter" placeholder="e.g. Prof. Smith" autocomplete="off">
+                </section>
+
+                <section class="filter-section">
+                    <h3>Condition</h3>
+                    <div class="checkbox-chips" data-group="conditions">
+                        <button type="button" class="filter-chip" data-value="Like New">Like New</button>
+                        <button type="button" class="filter-chip" data-value="Good">Good</button>
+                        <button type="button" class="filter-chip" data-value="Fair">Fair</button>
+                        <button type="button" class="filter-chip" data-value="Worn">Worn</button>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <h3>Rent duration</h3>
+                    <div class="checkbox-chips" data-group="rentDurations">
+                        <button type="button" class="filter-chip" data-value="week">Week</button>
+                        <button type="button" class="filter-chip" data-value="month">Month</button>
+                        <button type="button" class="filter-chip" data-value="semester">Semester</button>
+                    </div>
+                </section>
             </div>
-            <div class="dash-row" onclick="window.location.href='profile.html#rentals'">
-                <div class="dash-icon icon-indigo"></div>
-                <div class="dash-info">
-                    <div class="dash-title">Items Rented Out</div>
-                    <div class="dash-sub">Currently active</div>
-                </div>
-                <div class="dash-value" id="dash-rentals">2 items</div>
+
+            <div class="drawer-footer">
+                <button type="button" class="drawer-reset" id="drawer-reset">Reset</button>
+                <button type="button" class="drawer-apply" id="drawer-apply">Apply</button>
             </div>
-            <div class="dash-row" onclick="window.location.href='profile.html#orders'">
-                <div class="dash-icon icon-amber"></div>
-                <div class="dash-info">
-                    <div class="dash-title">Order History</div>
-                    <div class="dash-sub">Past transactions</div>
-                </div>
-                <div class="dash-value" id="dash-orders">5 orders</div>
-            </div>
-            <div class="dash-row" onclick="window.location.href='profile.html#saved'">
-                <div class="dash-icon icon-rose"></div>
-                <div class="dash-info">
-                    <div class="dash-title">Saved Items</div>
-                    <div class="dash-sub">Your bookmarks</div>
-                </div>
-                <div class="dash-value" id="dash-saved">3 items</div>
-            </div>
-        </div>
+        </aside>
     </div>
 
-</main>
-
-<nav class="bottom-nav">
-    <div class="bottom-nav-items">
-        <a class="nav-item active" href="home.html">
-            <span class="nav-item-icon"></span>
-            <span class="nav-item-label">Home</span>
-        </a>
-        <a class="nav-item" href="listings.html">
-            <span class="nav-item-icon"></span>
-            <span class="nav-item-label">Browse</span>
-        </a>
-        <a class="nav-item" href="sell.html">
-            <span class="nav-item-icon"></span>
-            <span class="nav-item-label">Sell</span>
-        </a>
-        <a class="nav-item" href="chat.html">
-            <span class="nav-item-icon"></span>
-            <span class="nav-item-label">Messages</span>
-        </a>
-        <a class="nav-item" href="profile.html">
-            <span class="nav-item-icon"></span>
-            <span class="nav-item-label">Profile</span>
-        </a>
-    </div>
-</nav>
-
-<script type="module" src="home.js"></script>
+    <script type="module" src="home.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,132 @@
+CS Summative Group Project (3 People)
+Project Name: Smart Campus Idle Item Matching & Circulation Platform
+
+Innovation: Exclusive campus-oriented system, different from ordinary second-hand trading platforms
+1. Project Overview
+This platform is specially designed for teachers and students on campus. It focuses on the reasonable circulation of unused items such as textbooks, daily necessities, sports equipment and digital accessories.
+It supports three transaction modes: short-term rental, item exchange and second-hand sale.
+The system matches resources intelligently based on users’ major, grade, courses and campus location, solving the problem of waste of student idle resources and high living cost.
+2. Core Innovative Highlights
+Academic Demand Matching
+Automatically recommend textbooks, study notes and review materials according to users’ majors and courses.
+Nearby Location Matching
+Prioritize matching users in the same building or campus area for easy offline pick-up.
+Flexible Rental System
+Support weekly, monthly and semester rental instead of one-time purchase.
+Idle Item Expiry Reminder
+Remind users to release idle seasonal or graduation supplies in time.
+Campus Closed-loop Transaction
+Safe and convenient trading only inside the school, no external merchants involved.
+Data Visualization Analysis
+Count popular idle goods and campus resource supply-demand data.
+3. Complete Functional Modules
+User Side
+User register & login (student / teacher identity classification)
+Release idle items with category, condition, price and location
+Multi-condition filter & intelligent push matching
+Private message chat, transaction appointment and pick-up confirmation
+Personal warehouse, order record, favorite items
+Wanted section for users to post demands
+Core Intelligent Functions
+Major-course matching algorithm
+Campus distance sorting algorithm
+User credit rating & mutual evaluation system
+Rental time and cost calculation
+Admin Backend
+User information management & violation content removal
+Item category and campus area management
+Data statistics & visual chart display
+Report handling and simple dispute settlement
+4. Clear Group Division of Work (3 Members)
+Member 1: Front-end Development & UI Design
+Design overall page layout and interface style
+Complete login, homepage, personal center and item release pages
+Realize page interaction, button functions and page jump
+Member 2: Back-end Development & Core Algorithm
+Build MySQL database and design data tables
+Complete basic data addition, deletion, modification and query
+Write intelligent matching logic and rental settlement rules
+Realize user identity verification and interface connection
+Member 3: Admin System & Data Visualization & Documentation
+Develop full-function administrator background
+Use charts to realize campus resource data analysis
+Complete user credit system and report function
+Finish project report, ER diagram, flow chart and PPT
+5. Suitable Tech Stack
+Frontend: HTML, CSS, JavaScript / Vue
+Backend: Python Flask / Node.js / Java
+Database: MySQL
+Data Visualization: ECharts
+6. Project Introduction (Directly use for report)
+This system is a vertical idle resource circulation platform built for campus users. Different from traditional second-hand platforms, it combines academic needs and geographic information to achieve accurate intelligent matching. It provides diversified circulation ways to reduce resource waste and daily consumption cost, and build an efficient and low-carbon campus resource sharing environment.
+
+
+NAME IDEAS: Commercium, 
+
+
+Ideas:
+Maps with schools in Canada
+Ways to get items: Second hand buying or buy new, renting, exchange
+Accounts
+Must make account to buy stuff
+Register your grade and school
+Save or favourite items
+Order history
+User credit score
+Personal Dashboard: How much money you saved, items currently rented out
+Private chat between buyer and seller
+Auction system 
+Stuff divided into categories (like new, renting, etc.)
+Search bar
+Filters: Course code, notes from classes with specific teachers, Price, material type, if renting: rent duration (eg a day, week, month)
+Safe payment
+AI assistant
+ help students with pricing their items
+If you list this calculator for $50, it will take 14 days to sell. If you list it for $35, it will sell in 24 hours.
+Identify if anyone is searching for a specific item or whether things are in high demand (can just use data analysis for this)
+Listing
+Name, images, description, price, posted time
+Seller info (name & email) + credit score
+Chat button
+User rate experience after transaction is finished
+User behaviour:
+Track how many times a specific listing is clicked
+How frequently users search for a specific item
+How many sales/trades were actually completed 
+(this can help the AI assistant collect more data)
+
+Member 1: Authentication, Profiles, & Canadian Maps
+This member handles getting users into the app, putting them on the map, and keeping track of their personal order histories.
+Accounts & Registration: Build the registration and login system. Force the rule that users must make an account to buy stuff.
+School & Grade Fields: Add explicit fields during registration to register your grade and school.
+Maps with Schools in Canada: Integrate an interactive map component pre-populated with schools in Canada to link users to their specific campus.
+Personal Dashboard: Create the dashboard interface displaying:
+How much money you saved (calculated from deals).
+Items currently rented out.
+Order History: Build the database tracking and page layout for the user's past transactions.
+Save or Favourite Items: Create the "bookmark" functionality allowing users to save items for later.
+Member 2: Marketplace, Listings, Search & Filters
+This member builds the core trading engine—how items are posted, categorized, viewed, and searched.
+Listing Creation & Details: Create the form and page layout to display an item with its name, images, description, price, and posted time.
+Seller Info Display: Ensure each listing card pulls and shows the seller info (name & email) + credit score.
+Stuff Divided into Categories: Group listings cleanly into specific transactional streams (Second-hand buying or buy new, renting, exchange).
+Search Bar & Filters: Build the search input and its complex dropdown logic to filter by:
+Course code
+Notes from classes with specific teachers
+Price
+Material type
+Rent duration (e.g., a day, week, month) if renting is selected.
+Member 3: Live Communication, Payment & Auctions, & AI Data Analytics
+This member handles the interactive layer, the bidding engine, and tracking marketplace behavior for the AI feature.
+Private Chat & Chat Button: Build the live messaging interface and place a functional Chat button on the item listings so buyers and sellers can talk.
+Auction System: Build the bidding logic featuring an auction timer and tracking for current bids.
+Payment system: Adding card, using the card to safely buy things, All security stuff because people are often unsure about the safety of online transactions
+User Credit Score: Create the scoring calculation system that updates based on transaction success.
+User Behaviour Data Trackers: Write the background analytics code to track:
+How many times a specific listing is clicked
+How frequently users search for a specific item
+How many sales/trades were actually completed
+AI Assistant: Build the pricing suggestion engine using the user behavior data above to:
+Help students with pricing their items (e.g., "If you list this calculator for $50, it will take 14 days to sell. If you list it for $35, it will sell in 24 hours").
+Identify if anyone is searching for a specific item or whether things are in high demand.
+

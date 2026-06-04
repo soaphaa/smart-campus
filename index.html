@@ -1,13 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="index.css">
 </head>
-
 <body>
-    <a href="login.html#signup">Sign Up</a>
-    <a href="login.html#login">Login</a>
+
+<nav id="top-nav">
+    <div class="nav-logo">Smart Campus</div>
+    <div class="nav-actions">
+        <button class="btn-ghost" onclick="window.location.href='login.html#login'">Log in</button>
+        <button class="btn-primary" onclick="window.location.href='login.html#signup'">Sign up</button>
+    </div>
+</nav>
+
+<main id="index-main">
+
+    <section class="hero">
+        <h1 class="reveal reveal-2">Buy, sell & trade</h1>
+        <p class="reveal reveal-3">One student's trash is another's treasure.</p>
+        <div class="hero-cta reveal reveal-4">
+            <button class="btn-hero" onclick="window.location.href='login.html#signup'">Get Started Free</button>
+            <button class="btn-hero-outline" onclick="window.location.href='home.html'">Browse Listings</button>
+        </div>
+    </section>
+
+    <p class="section-label reveal reveal-5">What do you want to do?</p>
+
+    <div class="actions-grid">
+        <!-- Each href goes to home.html with a ?category= param so her filters auto-trigger -->
+        <a class="action-card reveal" style="animation-delay:0.32s" href="home.html?category=used">
+            <div class="action-icon icon-indigo">🛒</div>
+            <div class="action-title">Buy</div>
+            <div class="action-sub">Second-hand &new items</div>
+        </a>
+        <a class="action-card reveal" style="animation-delay:0.38s" href="home.html?category=rent">
+            <div class="action-icon icon-teal"></div>
+            <div class="action-title">Rent</div>
+            <div class="action-sub">Day, week, or month</div>
+        </a>
+        <a class="action-card reveal" style="animation-delay:0.44s" href="home.html?category=exchange">
+            <div class="action-icon icon-amber"></div>
+            <div class="action-title">Trade</div>
+            <div class="action-sub">Exchange with others</div>
+        </a>
+        <a class="action-card reveal" style="animation-delay:0.50s" href="sell.html">
+            <div class="action-icon icon-rose"></div>
+            <div class="action-title">Sell</div>
+            <div class="action-sub">List your item now</div>
+        </a>
+        <a class="action-card full-width reveal" style="animation-delay:0.56s" href="chat.html">
+            <div class="action-icon icon-sky"></div>
+            <div>
+                <div class="action-title">Messages</div>
+                <div class="action-sub">Chat with buyers &sellers</div>
+            </div>
+            <div class="action-badge">Live</div>
+        </a>
+    </div>
+
+    <p class="section-label reveal reveal-5">Your account</p>
+
+    <div class="dashboard-card reveal reveal-6">
+        <div class="dashboard-header">
+            <span>Dashboard</span>
+            <a href="profile.html">View all →</a>
+        </div>
+        <div class="dashboard-rows">
+            <div class="dash-row" onclick="window.location.href='profile.html#savings'">
+                <div class="dash-icon icon-teal"></div>
+                <div class="dash-info">
+                    <div class="dash-title">Money Saved</div>
+                    <div class="dash-sub">This semester</div>
+                </div>
+                <div class="dash-value" id="dash-savings">$0.00</div>
+            </div>
+            <div class="dash-row" onclick="window.location.href='profile.html#rentals'">
+                <div class="dash-icon icon-indigo"></div>
+                <div class="dash-info">
+                    <div class="dash-title">Items Rented Out</div>
+                    <div class="dash-sub">Currently active</div>
+                </div>
+                <div class="dash-value" id="dash-rentals">0 items</div>
+            </div>
+            <div class="dash-row" onclick="window.location.href='profile.html#orders'">
+                <div class="dash-icon icon-amber"></div>
+                <div class="dash-info">
+                    <div class="dash-title">Order History</div>
+                    <div class="dash-sub">Past transactions</div>
+                </div>
+                <div class="dash-value" id="dash-orders">0 orders</div>
+            </div>
+            <div class="dash-row" onclick="window.location.href='profile.html#saved'">
+                <div class="dash-icon icon-rose"></div>
+                <div class="dash-info">
+                    <div class="dash-title">Saved Items</div>
+                    <div class="dash-sub">Your bookmarks</div>
+                </div>
+                <div class="dash-value" id="dash-saved">0 items</div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<nav class="bottom-nav">
+    <div class="bottom-nav-items">
+        <a class="nav-item active" href="index.html">
+            <span class="nav-item-icon"></span>
+            <span class="nav-item-label">Home</span>
+        </a>
+        <a class="nav-item" href="home.html">
+            <span class="nav-item-icon"></span>
+            <span class="nav-item-label">Browse</span>
+        </a>
+        <a class="nav-item" href="sell.html">
+            <span class="nav-item-icon"></span>
+            <span class="nav-item-label">Sell</span>
+        </a>
+        <a class="nav-item" href="chat.html">
+            <span class="nav-item-icon"></span>
+            <span class="nav-item-label">Messages</span>
+        </a>
+        <a class="nav-item" href="profile.html">
+            <span class="nav-item-icon"></span>
+            <span class="nav-item-label">Profile</span>
+        </a>
+    </div>
+</nav>
+
+<script type="module" src="index.js"></script>
 </body>
+</html>
