@@ -39,7 +39,29 @@ onAuthStateChanged(authentication, async user => {
     console.log(`Logged in as: ${ME.name} (${ME.email}) | UID: ${ME.uid}`);
 
     loadConversations();
+    autoOpenFromUrl();
 });
+
+// ── Auto-open conversation from ?conv=<id> ───────────────────────────────────
+async function autoOpenFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const convId = params.get("conv");
+    if (!convId) return;
+
+    try {
+        const convDoc = await getDoc(doc(database, "conversations", convId));
+        if (!convDoc.exists()) return;
+
+        const data = convDoc.data();
+        const otherId = data.participants?.find(id => id !== ME.uid);
+        const otherName = data.names?.[otherId] ?? "Unknown";
+
+        openConv(convId, otherName);
+        history.replaceState(null, "", "chat.html");
+    } catch (err) {
+        console.warn("Auto-open conversation failed:", err);
+    }
+}
 
 // ── Load conversations ────────────────────────────────────────────────────────
 function loadConversations() {

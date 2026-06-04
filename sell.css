@@ -1,0 +1,390 @@
+/* Reuses :root vars from home.css */
+@import url("home.css");
+
+body {
+    min-height: 100vh;
+}
+
+/* ── Simplified top bar ──────────────────────────────────── */
+#sell-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.back-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.6rem;
+    transition: background 0.15s ease;
+}
+
+.back-link:hover {
+    background: var(--background-color);
+}
+
+#sell-topbar h1 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ── Form layout ─────────────────────────────────────────── */
+#sell-form {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field label.field-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+    letter-spacing: 0.01em;
+}
+
+.field .hint {
+    font-size: 0.75rem;
+    color: var(--text-prompt);
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field textarea,
+.field select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: #fff;
+    font-size: 1rem;
+    color: var(--text-main);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.field textarea {
+    min-height: 6rem;
+    resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px #4f46e51a;
+}
+
+.field-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.field-row .field {
+    flex: 1;
+}
+
+/* ── Category button group ───────────────────────────────── */
+.cat-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+}
+
+.cat-btn {
+    padding: 0.85rem 0.5rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: #fff;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.cat-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.cat-btn.selected {
+    color: #fff;
+}
+
+.cat-btn[data-category="new"].selected {
+    background: var(--cat-new);
+    border-color: var(--cat-new);
+}
+
+.cat-btn[data-category="used"].selected {
+    background: var(--cat-used);
+    border-color: var(--cat-used);
+}
+
+.cat-btn[data-category="rent"].selected {
+    background: var(--cat-rent);
+    border-color: var(--cat-rent);
+}
+
+.cat-btn[data-category="exchange"].selected {
+    background: var(--cat-exchange);
+    border-color: var(--cat-exchange);
+}
+
+/* ── Price + currency prefix ─────────────────────────────── */
+.price-wrap {
+    position: relative;
+}
+
+.price-wrap::before {
+    content: "$";
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-prompt);
+    pointer-events: none;
+    font-size: 1rem;
+}
+
+.price-wrap input {
+    padding-left: 1.8rem !important;
+}
+
+/* ── Toggle switch field ─────────────────────────────────── */
+.toggle-field {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.toggle-field:hover {
+    border-color: var(--primary-color);
+}
+
+.toggle-field .toggle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.toggle-field .toggle-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.toggle-field .toggle-sub {
+    font-size: 0.78rem;
+    color: var(--text-prompt);
+}
+
+.toggle-field input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toggle-switch {
+    width: 2.6rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    background: var(--border-color);
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.toggle-switch::after {
+    content: "";
+    position: absolute;
+    top: 0.15rem;
+    left: 0.15rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.toggle-field input[type="checkbox"]:checked ~ .toggle-switch {
+    background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
+}
+
+.toggle-field input[type="checkbox"]:checked ~ .toggle-switch::after {
+    transform: translateX(1.1rem);
+}
+
+#course-fields.hidden {
+    display: none !important;
+}
+
+#course-fields {
+    padding-left: 1rem;
+    border-left: 3px solid var(--border-color);
+    margin-left: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ── Image uploader ──────────────────────────────────────── */
+#image-drop {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-prompt);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+#image-drop:hover,
+#image-drop.dragover {
+    border-color: var(--primary-color);
+    background: #4f46e508;
+    color: var(--primary-color);
+}
+
+#image-drop .upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+#image-drop .upload-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#image-drop .upload-sub {
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+}
+
+#image-input {
+    display: none;
+}
+
+#image-previews {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-top: 0.6rem;
+}
+
+#image-previews:empty {
+    display: none;
+}
+
+.preview-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--background-color);
+}
+
+.preview-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.preview-remove {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    font-size: 0.75rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-remove:hover {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+/* ── Submit ──────────────────────────────────────────────── */
+#submit-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--text-accent) 100%);
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
+}
+
+#submit-btn:hover:not(:disabled) {
+    filter: brightness(95%);
+}
+
+#submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#form-error {
+    color: #dc2626;
+    font-size: 0.85rem;
+    text-align: center;
+    min-height: 1.2rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+    #sell-form {
+        padding: 1rem 1rem 3rem;
+    }
+
+    .cat-group {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .field-row {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+}

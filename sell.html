@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sell an Item — Commercium</title>
+    <link rel="stylesheet" href="sell.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header id="sell-topbar">
+        <a href="home.html" id="back-link" class="back-link">
+            <i class="fa-solid fa-angle-left"></i>
+            <span>Back</span>
+        </a>
+        <h1 id="page-title">Sell an Item</h1>
+    </header>
+
+    <form id="sell-form" autocomplete="off">
+
+        <div class="field">
+            <label class="field-label">Photos <span class="hint">(up to 3)</span></label>
+            <div id="image-drop">
+                <div class="upload-icon"><i class="fa-regular fa-image"></i></div>
+                <div class="upload-text">Click or drop images here</div>
+                <div class="upload-sub">JPG / PNG — auto-compressed before upload</div>
+            </div>
+            <input type="file" id="image-input" accept="image/*" multiple>
+            <div id="image-previews"></div>
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="title-input">Title</label>
+            <input type="text" id="title-input" maxlength="80" placeholder="e.g. Calculus textbook, lightly used" required>
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="description-input">Description</label>
+            <textarea id="description-input" maxlength="1000" placeholder="Condition, edition, what's included, why you're selling..." required></textarea>
+        </div>
+
+        <div class="field">
+            <label class="field-label">Category</label>
+            <div class="cat-group" id="category-group">
+                <button type="button" class="cat-btn" data-category="new">New</button>
+                <button type="button" class="cat-btn" data-category="used">Used</button>
+                <button type="button" class="cat-btn" data-category="rent">Rent</button>
+                <button type="button" class="cat-btn" data-category="exchange">Exchange</button>
+            </div>
+        </div>
+
+        <div class="field-row" id="price-row">
+            <div class="field" id="price-field">
+                <label class="field-label" for="price-input">Price</label>
+                <div class="price-wrap">
+                    <input type="number" id="price-input" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="field hidden" id="rent-field">
+                <label class="field-label" for="rent-duration">Per</label>
+                <select id="rent-duration">
+                    <option value="week">Week</option>
+                    <option value="month" selected>Month</option>
+                    <option value="semester">Semester</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="field-row">
+            <div class="field hidden" id="condition-field">
+                <label class="field-label" for="condition-input">Condition</label>
+                <select id="condition-input">
+                    <option value="">— Select —</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Worn">Worn</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field-label" for="material-input">Material type <span class="hint">(optional)</span></label>
+                <select id="material-input">
+                    <option value="">— Select —</option>
+                    <option value="Textbook">Textbook</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Stationery">Stationery</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <label class="toggle-field" for="course-related-toggle">
+            <div class="toggle-text">
+                <span class="toggle-title">Course-related</span>
+                <span class="toggle-sub">Textbook, lecture notes, lab equipment, etc.</span>
+            </div>
+            <input type="checkbox" id="course-related-toggle">
+            <span class="toggle-switch"></span>
+        </label>
+
+        <div id="course-fields" class="hidden">
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label" for="course-input">Course code</label>
+                    <input type="text" id="course-input" maxlength="20" placeholder="e.g. MATH 1019">
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="teacher-input">Teacher <span class="hint">(optional)</span></label>
+                    <input type="text" id="teacher-input" maxlength="60" placeholder="e.g. Prof. Smith">
+                </div>
+            </div>
+        </div>
+
+        <div id="form-error"></div>
+
+        <button type="submit" id="submit-btn">Publish Listing</button>
+    </form>
+
+    <script type="module" src="sell.js"></script>
+</body>
+
+</html>
