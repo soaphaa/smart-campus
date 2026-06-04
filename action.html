@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Redirecting...</title></head>
+<body>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    const oobCode = params.get("oobCode");
+
+    if (mode === "resetPassword" && oobCode) {
+        window.location.replace("/forgot-password.html#password-reset?token=" + oobCode);
+    } else {
+        window.location.replace("/forgot-password.html");
+    }
+</script>
+</body>
+</html>

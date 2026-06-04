@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Header (Testing)</title>
+    <link rel="stylesheet" href="header.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header id="header">
+
+        <a id="logo" href="home.html">Smart Campus</a>
+
+        <form id="search-bar" action="/search" method="get">
+            <input type="search" name="search" placeholder="What are you looking for?" aria-label="Search" required>
+            <button>
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </form>
+
+
+        <div id="profile">
+            <div id="profile-trigger" onclick="toggleDropdown()">
+                <button id="profile-btn" aria-haspopup="true" aria-expanded="false">
+                    <img src="default-pfp.png" alt="Profile" id="header-pfp">
+                </button>
+                <i class="fa-solid fa-chevron-down" id="profile-chevron"></i>
+            </div>
+            <ul id="profile-dropdown">
+                <li><a href="/profile">My Profile</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/favorites">Favorites ❤️</a></li>
+                <li><a href="/settings">Account Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="/logout" class="logout-btn">Log Out</a></li>
+            </ul>
+        </div>
+
+    </header>
+
+    <script src="header.js"></script>
+
+</body>
+
+</html>
