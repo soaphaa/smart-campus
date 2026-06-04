@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listing — Commercium</title>
+    <link rel="stylesheet" href="listing.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header id="detail-topbar">
+        <a href="home.html" class="back-link">
+            <i class="fa-solid fa-angle-left"></i>
+            <span>Back</span>
+        </a>
+    </header>
+
+    <div id="status-screen">
+        <div class="emoji">⏳</div>
+        <div class="msg">Loading listing...</div>
+    </div>
+
+    <main id="detail-main" class="hidden">
+        <section id="gallery">
+            <div id="main-image-wrap">
+                <div class="placeholder"><i class="fa-regular fa-image"></i></div>
+            </div>
+            <div id="thumb-row"></div>
+        </section>
+
+        <section id="info">
+            <span class="detail-cat-badge" id="detail-category"></span>
+            <h1 id="detail-title"></h1>
+            <div id="detail-price"></div>
+
+            <div class="meta-row" id="detail-meta"></div>
+
+            <div id="detail-description"></div>
+
+            <div id="seller-card">
+                <div class="seller-avatar" id="seller-avatar">?</div>
+                <div class="seller-info">
+                    <div class="seller-name" id="seller-name"></div>
+                    <div class="seller-school" id="seller-school"></div>
+                    <a class="seller-email" id="seller-email" href="#"></a>
+                </div>
+            </div>
+
+            <div id="actions"></div>
+        </section>
+    </main>
+
+    <script type="module" src="listing.js"></script>
+</body>
+
+</html>
