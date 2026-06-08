@@ -1,64 +1,69 @@
 import { authentication, database } from "./firebase-config.js";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-const signUp = document.getElementById("sign-up");
-const login = document.getElementById("login");
-const toLoginBtn = document.getElementById("to-login-btn");
-const toSignUpBtn = document.getElementById("to-sign-up-btn");
-const googleSignUp = document.getElementById("google-sign-up");
-const googleLogin = document.getElementById("google-login");
+const signUpCard      = document.getElementById("sign-up");
+const loginCard       = document.getElementById("login");
+const toLoginBtn      = document.getElementById("to-login-btn");
+const toSignUpBtn     = document.getElementById("to-sign-up-btn");
+const googleSignUp    = document.getElementById("google-sign-up");
+const googleLogin     = document.getElementById("google-login");
 
-const passwordToggles = document.querySelectorAll(".password-toggle");
-const forgotPasswordBtn = document.getElementById("forgot-password-btn");
+const signUpForm      = document.getElementById("sign-up-form");
+const loginForm       = document.getElementById("login-form");
+const signUpBtn       = document.getElementById("sign-up-btn");
+const loginBtn        = document.getElementById("login-btn");
 
-const nameInput = document.getElementById("name");
-const signUpEmailInput = document.getElementById("sign-up-email");
-const signUpPasswordInput = document.getElementById("sign-up-password");
-const schoolInput = document.getElementById("school");
-const schoolsList = document.getElementById("schools-list");
+const nameInput       = document.getElementById("name");
+const signUpEmail     = document.getElementById("sign-up-email");
+const signUpPassword  = document.getElementById("sign-up-password");
+const schoolInput     = document.getElementById("school");
+const schoolsList     = document.getElementById("schools-list");
 
-const loginEmailInput = document.getElementById("login-email");
-const loginPasswordInput = document.getElementById("login-password");
+const loginEmail      = document.getElementById("login-email");
+const loginPassword   = document.getElementById("login-password");
 
-window.addEventListener("DOMContentLoaded", () => {
-    handleHashChange();
-});
+// ── Toast ─────────────────────────────────────────────────
+const toastEl   = document.getElementById("toast");
+const toastIcon = document.getElementById("toast-icon");
+const toastMsg  = document.getElementById("toast-msg");
 
-window.addEventListener("hashchange", () => {
-    handleHashChange();
-});
+function showToast(msg, type = "success") {
+    toastEl.className = `show toast-${type}`;
+    toastIcon.className = type === "success"
+        ? "fa-solid fa-circle-check"
+        : "fa-solid fa-circle-xmark";
+    toastMsg.textContent = msg;
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(() => { toastEl.className = ""; }, 3500);
+}
+
+// ── Hash routing ──────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", handleHashChange);
+window.addEventListener("hashchange", handleHashChange);
 
 function handleHashChange() {
-    login.classList.add("hidden");
-    signUp.classList.add("hidden");
+    loginCard.classList.add("hidden");
+    signUpCard.classList.add("hidden");
 
     const hash = window.location.hash;
-
-    if (hash === "#login") {
-        login.classList.remove("hidden");
-    } else if (hash === "#signup") {
-        signUp.classList.remove("hidden");
+    if (hash === "#signup") {
+        signUpCard.classList.remove("hidden");
+    } else {
+        // Default to login for any other hash (including #login)
+        window.history.replaceState(null, "", "#login");
+        loginCard.classList.remove("hidden");
     }
 
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        setTimeout(() => {
-            renderGoogleButtons();
-        }, 0);
+    if (typeof google !== "undefined" && google.accounts?.id) {
+        setTimeout(renderGoogleButtons, 0);
     }
 }
 
-window.goBackToPreviousPage = function (event) {
-    event.preventDefault();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const fallback = urlParams.get('fallback') || "index.html";
-
-    window.location.href = fallback;
-};
-
 toLoginBtn.addEventListener("click", () => {
-    // window.location.hash = "#login";
     window.history.replaceState(null, "", "#login");
     handleHashChange();
 });
@@ -68,82 +73,91 @@ toSignUpBtn.addEventListener("click", () => {
     handleHashChange();
 });
 
-
-signUp.addEventListener("submit", async (e) => {
+// ── Back navigation ───────────────────────────────────────
+window.goBackToPreviousPage = function (e) {
     e.preventDefault();
+    const fallback = new URLSearchParams(window.location.search).get("fallback") || "index.html";
+    window.location.href = fallback;
+};
 
-    const name = nameInput.value;
-    const email = signUpEmailInput.value;
-    const school = schoolInput.value;
-    const password = signUpPasswordInput.value;
+// ── Sign up ───────────────────────────────────────────────
+signUpForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name     = nameInput.value.trim();
+    const email    = signUpEmail.value.trim();
+    const school   = schoolInput.value.trim();
+    const password = signUpPassword.value;
+
+    if (!name || !email || !school || !password) {
+        showToast("Please fill in all fields.", "error");
+        return;
+    }
+
+    setLoading(signUpBtn, true, "Creating account…");
 
     try {
-        const userCredential = await createUserWithEmailAndPassword(authentication, email, password);
-        const user = userCredential.user;
-
-        await setDoc(doc(database, "users", user.uid), {
-            name: name,
-            email: email,
-            school: school,
+        const cred = await createUserWithEmailAndPassword(authentication, email, password);
+        await setDoc(doc(database, "users", cred.user.uid), {
+            name, email, school,
             dateCreated: new Date().toISOString()
         });
-        window.location.href = "home.html"
-    } catch (error) {
-        // console.error("Sign up error: ", error.code);
-        if (error.code === "auth/email-already-in-use") {
-            alert("An account with this email already exists. Try logging in instead.");
+        showToast("Account created! Welcome to Commercium 🎉");
+        setTimeout(() => window.location.href = "home.html", 1000);
+    } catch (err) {
+        setLoading(signUpBtn, false, "Sign Up");
+        if (err.code === "auth/email-already-in-use") {
+            showToast("An account with this email already exists.", "error");
             window.history.replaceState(null, "", "#login");
             handleHashChange();
-        } else if (error.code === "auth/weak-password") {
-            alert("Password should be at least 6 characters long.");
+        } else if (err.code === "auth/weak-password") {
+            showToast("Password must be at least 6 characters.", "error");
         } else {
-            alert("Sign up failed. Please try again.\nError: " + error.message);
+            showToast("Sign up failed. Please try again.", "error");
+            console.error(err);
         }
     }
 });
 
-login.addEventListener("submit", async (e) => {
+// ── Log in ────────────────────────────────────────────────
+loginForm.addEventListener("submit", async e => {
     e.preventDefault();
+    const email    = loginEmail.value.trim();
+    const password = loginPassword.value;
 
-    const email = loginEmailInput.value;
-    const password = loginPasswordInput.value;
+    if (!email || !password) {
+        showToast("Please enter your email and password.", "error");
+        return;
+    }
+
+    setLoading(loginBtn, true, "Logging in…");
 
     try {
-        const userCredential = await signInWithEmailAndPassword(authentication, email, password);
-        window.location.href = "home.html"
-    } catch (error) {
-
-        if (error.code === "auth/invalid-credential") {
-            alert("Invalid email or password. Please try again.");
-        } else if (error.code === "auth/user-not-found") {
-            alert("No account found with this email. Please sign up first.");
+        await signInWithEmailAndPassword(authentication, email, password);
+        showToast("Logged in successfully!");
+        setTimeout(() => window.location.href = "home.html", 800);
+    } catch (err) {
+        setLoading(loginBtn, false, "Log In");
+        if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found") {
+            showToast("Invalid email or password.", "error");
         } else {
-            alert("Login failed. Please try again. \nError: " + error.message);
+            showToast("Login failed. Please try again.", "error");
+            console.error(err);
         }
     }
 });
 
-passwordToggles.forEach(toggle => {
-
-    toggle.addEventListener("click", function () {
-        const passwordInput = toggle.previousElementSibling;
-
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggle.classList.remove('fa-eye');
-            toggle.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggle.classList.remove('fa-eye-slash');
-            toggle.classList.add('fa-eye');
-        }
+// ── Password toggles ──────────────────────────────────────
+document.querySelectorAll(".pwd-toggle").forEach(btn => {
+    btn.addEventListener("mousedown", e => e.preventDefault());
+    btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isText = input.type === "text";
+        input.type = isText ? "password" : "text";
+        btn.querySelector("i").className = isText ? "fa-regular fa-eye" : "fa-regular fa-eye-slash";
     });
+});
 
-    toggle.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-    })
-})
-
+// ── School autocomplete ───────────────────────────────────
 let allSchools = [];
 
 schoolInput.addEventListener("focus", () => {
@@ -151,136 +165,95 @@ schoolInput.addEventListener("focus", () => {
     filterSchools(schoolInput.value);
 });
 
-schoolInput.addEventListener("input", () => {
-    filterSchools(schoolInput.value);
-});
+schoolInput.addEventListener("input", () => filterSchools(schoolInput.value));
 
 schoolInput.addEventListener("blur", () => {
-    setTimeout(() => {
-        schoolsList.classList.add("hidden");
-    }, 200);
+    setTimeout(() => schoolsList.classList.add("hidden"), 200);
 });
 
 async function loadOntarioSchools() {
     try {
-        const response = await fetch("ontario-public-schools.json");
-        const data = await response.json();
-        const schools = data.records;
-
-        schools.forEach(schoolData => {
-            allSchools.push(schoolData[7]);
-        });
-    } catch (error) {
-        console.error("Error loading json file: ", error);
+        const res = await fetch("ontario-public-schools.json");
+        const data = await res.json();
+        allSchools = data.records.map(r => r[7]);
+    } catch (err) {
+        console.error("Couldn't load schools list:", err);
     }
 }
 
-function filterSchools(userInput) {
-    const input = userInput.toLowerCase().trim();
-
-    const matchingSchools = allSchools.filter(schoolName => {
-        return schoolName.toLowerCase().includes(input);
-    });
-
-    schoolsList.innerHTML = "";
-    const topMatches = matchingSchools.slice(0, 20);
-
-    topMatches.forEach(schoolName => {
-        const option = document.createElement('div');
-        option.className = 'school-option';
-        option.textContent = schoolName;
-
-        option.addEventListener("mousedown", () => {
-            schoolInput.value = schoolName;
+function filterSchools(value) {
+    const q = value.toLowerCase().trim();
+    const matches = allSchools.filter(s => s.toLowerCase().includes(q)).slice(0, 20);
+    schoolsList.innerHTML = matches.map(name => {
+        const div = document.createElement("div");
+        div.className = "school-option";
+        div.textContent = name;
+        div.addEventListener("mousedown", () => {
+            schoolInput.value = name;
             schoolsList.classList.add("hidden");
         });
-        schoolsList.appendChild(option);
+        return div.outerHTML;
+    }).join("");
+
+    // Re-attach listeners (outerHTML loses them)
+    schoolsList.querySelectorAll(".school-option").forEach((el, i) => {
+        el.addEventListener("mousedown", () => {
+            schoolInput.value = matches[i];
+            schoolsList.classList.add("hidden");
+        });
     });
 }
 
 loadOntarioSchools();
 
+// ── Loading state helper ──────────────────────────────────
+function setLoading(btn, loading, label) {
+    btn.disabled = loading;
+    btn.textContent = label;
+}
+
+// ── Google Sign-In ────────────────────────────────────────
 window.initGoogle = function () {
     google.accounts.id.initialize({
         client_id: "146597308769-s4apsm6nbec00892sb4l5v29mks1voj5.apps.googleusercontent.com",
         callback: handleGoogleCredential,
         auto_prompt: false
     });
-
     renderGoogleButtons();
 };
 
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            renderGoogleButtons();
-        }, 250);
+let resizeTimer;
+window.addEventListener("resize", () => {
+    if (typeof google !== "undefined" && google.accounts?.id) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(renderGoogleButtons, 250);
     }
 });
 
-
 function renderGoogleButtons() {
-    var isSignUp = !signUp.classList.contains("hidden");
-
-    if (isSignUp) {
-        if (googleSignUp) {
-            googleSignUp.innerHTML = "";
-            const width = googleSignUp.offsetWidth;
-
-            google.accounts.id.renderButton(
-                googleSignUp,
-                {
-                    type: "standard",
-                    // size: "large",
-                    shape: "pill",
-                    text: "signup_with",
-                    width: width
-                }
-            );
-        }
-    } else {
-        if (googleLogin) {
-            googleLogin.innerHTML = "";
-            const width = googleLogin.offsetWidth;
-
-            google.accounts.id.renderButton(
-                googleLogin,
-                {
-                    type: "standard",
-                    // size: "large",
-                    shape: "pill",
-                    text: "signin_with",
-                    width: width
-                }
-            );
-        }
-    }
+    const isSignUp = !signUpCard.classList.contains("hidden");
+    const target   = isSignUp ? googleSignUp : googleLogin;
+    if (!target) return;
+    target.innerHTML = "";
+    google.accounts.id.renderButton(target, {
+        type: "standard",
+        shape: "pill",
+        text: isSignUp ? "signup_with" : "signin_with",
+        width: target.offsetWidth
+    });
 }
 
 function handleGoogleCredential(response) {
-    const token = response.credential;
-    const userProfile = decodeJWT(token);
-
-    console.log("Successfully logged in with Google!");
-    console.log("User Unique ID:", userProfile.sub);
-    console.log("Name:", userProfile.name);
-    console.log("Email:", userProfile.email);
-    console.log("Profile Pic URL:", userProfile.picture);
-
+    const profile = decodeJWT(response.credential);
+    console.log("Google sign-in:", profile.name, profile.email);
+    // TODO: wire up Firestore user creation for Google accounts
 }
 
 function decodeJWT(token) {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-        atob(base64)
-            .split("")
-            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(decodeURIComponent(
+        atob(payload).split("").map(c => "%" + c.charCodeAt(0).toString(16).padStart(2, "0")).join("")
+    ));
 }
 
 window.initGoogle();
