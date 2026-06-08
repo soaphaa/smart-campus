@@ -736,7 +736,7 @@ async function renderFavourites() {
                 ${imgHTML}
                 ${item.category ? `<span class="listing-status-badge" style="background:#eef2ff;color:#4f46e5">${catLabel[item.category] ?? item.category}</span>` : ""}
                 <button class="fav-remove-btn" data-fav="${item.favDocId}" title="Remove from favourites">
-                    <i class="fa-solid fa-heart-crack"></i>
+                    <i class="fa-solid fa-heart"></i>
                 </button>
             </div>
             <div class="listing-card-body" style="cursor:pointer"

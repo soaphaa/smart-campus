@@ -35,10 +35,12 @@ button {
 
 /* ── Top bar ─────────────────────────────────────────────── */
 #topbar {
+    width: 100%;
     position: sticky;
     top: 0;
     z-index: 50;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.5rem;
@@ -62,7 +64,7 @@ button {
 
 #search-wrap {
     flex: 1;
-    max-width: 480px;
+    max-width: 600px;
     position: relative;
 }
 
@@ -168,7 +170,6 @@ button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto;
 }
 
 .icon-btn {
@@ -623,10 +624,21 @@ button {
     }
 }
 
-.cat-new { background: var(--cat-new); }
-.cat-used { background: var(--cat-used); }
-.cat-rent { background: var(--cat-rent); }
-.cat-exchange { background: var(--cat-exchange); }
+.cat-new {
+    background: var(--cat-new);
+}
+
+.cat-used {
+    background: var(--cat-used);
+}
+
+.cat-rent {
+    background: var(--cat-rent);
+}
+
+.cat-exchange {
+    background: var(--cat-exchange);
+}
 
 .card-body {
     padding: 0.85rem 1rem 1rem;
