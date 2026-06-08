@@ -57,6 +57,7 @@ button {
     color: transparent;
     user-select: none;
     flex-shrink: 0;
+    text-decoration: none;
 }
 
 #search-wrap {
@@ -176,6 +177,7 @@ button {
     border-radius: 50%;
     border: none;
     background: transparent;
+    box-shadow: none;
     color: var(--text-main);
     font-size: 1.1rem;
     display: inline-flex;
@@ -186,6 +188,11 @@ button {
 
 .icon-btn:hover {
     background: var(--background-color);
+}
+
+.active-icon {
+    background: #eef2ff !important;
+    color: var(--primary-color) !important;
 }
 
 #filters-btn {

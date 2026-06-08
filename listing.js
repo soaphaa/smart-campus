@@ -3,46 +3,39 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import {
-    doc, getDoc, deleteDoc, updateDoc, increment,
+    doc, getDoc, setDoc, deleteDoc, updateDoc, increment,
     collection, getDocs, addDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 // ── DOM ──────────────────────────────────────────────────
 const statusScreen = document.getElementById("status-screen");
 const detailMain = document.getElementById("detail-main");
-
 const mainImageWrap = document.getElementById("main-image-wrap");
 const thumbRow = document.getElementById("thumb-row");
-
 const categoryEl = document.getElementById("detail-category");
 const titleEl = document.getElementById("detail-title");
 const priceEl = document.getElementById("detail-price");
 const metaEl = document.getElementById("detail-meta");
 const descriptionEl = document.getElementById("detail-description");
-
 const sellerAvatar = document.getElementById("seller-avatar");
 const sellerName = document.getElementById("seller-name");
 const sellerSchool = document.getElementById("seller-school");
 const sellerEmail = document.getElementById("seller-email");
-
 const actionsEl = document.getElementById("actions");
 
 // ── State ────────────────────────────────────────────────
 let ME = null;
 let listingId = null;
 let listing = null;
+let isFaved = false;   // tracks current favourite state
 
-const CATEGORY_LABEL = {
-    new: "New", used: "Used", rent: "Rent", exchange: "Exchange"
-};
+const CATEGORY_LABEL = { new: "New", used: "Used", rent: "Rent", exchange: "Exchange" };
 
 // ── Init ─────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
 listingId = params.get("id");
 
-if (!listingId) {
-    showStatus("⚠️", "No listing ID provided.");
-}
+if (!listingId) showStatus("⚠️", "No listing ID provided.");
 
 onAuthStateChanged(authentication, async user => {
     if (!user) {
@@ -82,7 +75,7 @@ async function loadListing() {
     }
 }
 
-function render() {
+async function render() {
     statusScreen.classList.add("hidden");
     detailMain.classList.remove("hidden");
 
@@ -117,18 +110,10 @@ function render() {
 
     // Meta row
     const metaParts = [];
-    if (listing.condition) {
-        metaParts.push(`<span class="meta-item"><strong>Condition:</strong> ${escapeHtml(listing.condition)}</span>`);
-    }
-    if (listing.materialType) {
-        metaParts.push(`<span class="meta-item"><strong>Type:</strong> ${escapeHtml(listing.materialType)}</span>`);
-    }
-    if (listing.courseCode) {
-        metaParts.push(`<span class="meta-item"><strong>Course:</strong> ${escapeHtml(listing.courseCode)}</span>`);
-    }
-    if (listing.teacher) {
-        metaParts.push(`<span class="meta-item"><strong>Teacher:</strong> ${escapeHtml(listing.teacher)}</span>`);
-    }
+    if (listing.condition) metaParts.push(`<span class="meta-item"><strong>Condition:</strong> ${escapeHtml(listing.condition)}</span>`);
+    if (listing.materialType) metaParts.push(`<span class="meta-item"><strong>Type:</strong> ${escapeHtml(listing.materialType)}</span>`);
+    if (listing.courseCode) metaParts.push(`<span class="meta-item"><strong>Course:</strong> ${escapeHtml(listing.courseCode)}</span>`);
+    if (listing.teacher) metaParts.push(`<span class="meta-item"><strong>Teacher:</strong> ${escapeHtml(listing.teacher)}</span>`);
     metaParts.push(`<span class="meta-item"><i class="fa-regular fa-clock"></i> ${timeAgo(listing.postedAt)}</span>`);
     if (typeof listing.views === "number") {
         metaParts.push(`<span class="meta-item"><i class="fa-regular fa-eye"></i> ${listing.views} view${listing.views === 1 ? "" : "s"}</span>`);
@@ -137,7 +122,7 @@ function render() {
 
     descriptionEl.textContent = listing.description ?? "";
 
-    // Seller
+    // Seller card
     const sName = listing.sellerName ?? "Unknown";
     sellerAvatar.textContent = (sName[0] ?? "?").toUpperCase();
     sellerName.textContent = sName;
@@ -154,18 +139,36 @@ function render() {
 
     // Actions
     const isOwner = listing.sellerId === ME.uid;
-    actionsEl.innerHTML = isOwner
-        ? `
-            <button class="action-btn primary" id="edit-btn"><i class="fa-regular fa-pen-to-square"></i>&nbsp; Edit</button>
-            <button class="action-btn danger" id="delete-btn">Delete</button>
-        `
-        : `<button class="action-btn primary" id="msg-btn"><i class="fa-regular fa-comment"></i>&nbsp; Message Seller</button>`;
 
-    document.getElementById("edit-btn")?.addEventListener("click", () => {
-        window.location.href = `sell.html?edit=${listingId}`;
-    });
-    document.getElementById("delete-btn")?.addEventListener("click", handleDelete);
-    document.getElementById("msg-btn")?.addEventListener("click", handleMessageSeller);
+    if (isOwner) {
+        actionsEl.innerHTML = `
+            <button class="action-btn primary" id="edit-btn">
+                <i class="fa-regular fa-pen-to-square"></i>&nbsp; Edit
+            </button>
+            <button class="action-btn danger" id="delete-btn">Delete</button>
+        `;
+        document.getElementById("edit-btn").addEventListener("click", () => {
+            window.location.href = `sell.html?edit=${listingId}`;
+        });
+        document.getElementById("delete-btn").addEventListener("click", handleDelete);
+    } else {
+        // Check current favourite state before rendering buttons
+        const favRef = doc(database, "users", ME.uid, "favourites", listingId);
+        const favSnap = await getDoc(favRef);
+        isFaved = favSnap.exists();
+
+        actionsEl.innerHTML = `
+            <button class="action-btn ${isFaved ? "faved" : ""}" id="fav-btn">
+                <i class="fa-${isFaved ? "solid" : "regular"} fa-heart"></i>
+                <span id="fav-label">${isFaved ? "Saved" : "Save"}</span>
+            </button>
+            <button class="action-btn primary" id="msg-btn">
+                <i class="fa-regular fa-comment"></i>&nbsp; Message Seller
+            </button>
+        `;
+        document.getElementById("msg-btn").addEventListener("click", handleMessageSeller);
+        document.getElementById("fav-btn").addEventListener("click", handleToggleFavourite);
+    }
 }
 
 function setMainImage(src) {
@@ -173,7 +176,45 @@ function setMainImage(src) {
         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',innerHTML:'<i class=\\'fa-regular fa-image\\'></i>'}))">`;
 }
 
-// ── Actions ──────────────────────────────────────────────
+// ── Favourite toggle ──────────────────────────────────────
+async function handleToggleFavourite() {
+    const btn = document.getElementById("fav-btn");
+    const icon = btn.querySelector("i");
+    const label = document.getElementById("fav-label");
+    const favRef = doc(database, "users", ME.uid, "favourites", listingId);
+
+    btn.disabled = true;
+
+    try {
+        if (isFaved) {
+            await deleteDoc(favRef);
+            isFaved = false;
+            icon.className = "fa-regular fa-heart";
+            label.textContent = "Save";
+            btn.classList.remove("faved");
+        } else {
+            // Save a snapshot of the key fields profile.js expects
+            await setDoc(favRef, {
+                listingId: listingId,
+                title: listing.title ?? "",
+                price: listing.price ?? null,
+                image: listing.images?.[0] ?? null,
+                category: listing.category ?? null,
+                sellerName: listing.sellerName ?? ""
+            });
+            isFaved = true;
+            icon.className = "fa-solid fa-heart";
+            label.textContent = "Saved";
+            btn.classList.add("faved");
+        }
+    } catch (err) {
+        console.error("Favourite toggle failed:", err);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+// ── Delete listing ────────────────────────────────────────
 async function handleDelete() {
     if (!confirm(`Delete "${listing.title}"? This cannot be undone.`)) return;
     const btn = document.getElementById("delete-btn");
@@ -190,6 +231,7 @@ async function handleDelete() {
     }
 }
 
+// ── Message seller ────────────────────────────────────────
 async function handleMessageSeller() {
     const btn = document.getElementById("msg-btn");
     btn.disabled = true;
@@ -198,7 +240,6 @@ async function handleMessageSeller() {
         const otherUid = listing.sellerId;
         const otherName = listing.sellerName ?? "Seller";
 
-        // Look for existing conversation with both participants
         const snapshot = await getDocs(collection(database, "conversations"));
         const existing = snapshot.docs.find(d => {
             const p = d.data().participants ?? [];
@@ -216,7 +257,6 @@ async function handleMessageSeller() {
             });
             convId = ref.id;
         }
-
         window.location.href = `chat.html?conv=${convId}`;
     } catch (err) {
         console.error("Open chat failed:", err);
@@ -226,7 +266,7 @@ async function handleMessageSeller() {
     }
 }
 
-// ── Helpers ──────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────
 function showStatus(emoji, msg) {
     statusScreen.classList.remove("hidden");
     detailMain.classList.add("hidden");
@@ -258,11 +298,9 @@ function timeAgo(ts) {
 }
 
 function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => (
-        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
-    ));
+    return String(s).replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+    );
 }
 
-function escapeAttr(s) {
-    return escapeHtml(s);
-}
+function escapeAttr(s) { return escapeHtml(s); }

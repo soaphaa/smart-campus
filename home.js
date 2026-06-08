@@ -13,7 +13,6 @@ const grid = document.getElementById("grid");
 const searchInput = document.getElementById("search-input");
 const categoryRow = document.getElementById("category-row");
 const sellBtn = document.getElementById("sell-btn");
-const messagesBtn = document.getElementById("messages-btn");
 const logoutBtn = document.getElementById("logout-btn");
 
 const filtersBtn = document.getElementById("filters-btn");
@@ -63,8 +62,8 @@ const CATEGORY_LABEL = {
 // ── Auth gate ────────────────────────────────────────────
 onAuthStateChanged(authentication, async user => {
     if (!user) {
-        window.location.href = "login.html#login";
-        return;
+        // Enclose the target view in the fallback parameter
+        window.location.replace("login.html?fallback=index.html#login");
     }
 
     const userDoc = await getDoc(doc(database, "users", user.uid));
@@ -505,14 +504,6 @@ grid.addEventListener("click", async e => {
     const card = e.target.closest(".card");
     if (!card) return;
     window.location.href = `listing.html?id=${card.dataset.id}`;
-});
-
-sellBtn.addEventListener("click", () => {
-    window.location.href = "sell.html";
-});
-
-messagesBtn.addEventListener("click", () => {
-    window.location.href = "chat.html";
 });
 
 logoutBtn.addEventListener("click", async () => {

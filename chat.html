@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messages</title>
     <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="home.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
+
+    <header id="topbar">
+        <a href="home.html" id="brand">Commercium</a>
+
+        <div class="topbar-actions" style="margin-left: auto;">
+            <button id="messages-btn" class="icon-btn active-icon" title="Messages">
+                <i class="fa-regular fa-comment"></i>
+            </button>
+            <button id="profile-btn" class="icon-btn" title="Profile" onclick="window.location='profile.html'">
+                <i class="fa-solid fa-user"></i>
+            </button>
+            <button id="logout-btn" class="icon-btn" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </header>
 
     <div id="app">
 
@@ -20,7 +40,9 @@
         </aside>
 
         <main id="main">
-            <div id="empty-state"><p>Select a conversation or start a new one</p></div>
+            <div id="empty-state">
+                <p>Select a conversation or start a new one</p>
+            </div>
 
             <div id="chat-view" class="hidden">
                 <div id="chat-header">
@@ -52,4 +74,5 @@
 
     <script type="module" src="chat.js"></script>
 </body>
+
 </html>

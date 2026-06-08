@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile — Commercium</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="profile.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <!-- ── Top bar (shared) ── -->
+    <header id="topbar">
+        <a href="home.html" id="brand">Commercium</a>
+
+        <div class="topbar-actions" style="margin-left: auto;">
+            <button id="messages-btn" class="icon-btn" title="Messages" onclick="window.location='chat.html'">
+                <i class="fa-regular fa-comment"></i>
+            </button>
+            <button id="profile-btn" class="icon-btn active-icon" title="Profile">
+                <i class="fa-solid fa-user"></i>
+            </button>
+            <button id="logout-btn" class="icon-btn" title="Log out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ── Profile layout ── -->
+    <div id="profile-layout">
+
+        <!-- Sidebar -->
+        <aside id="profile-sidebar">
+            <div id="avatar-wrap">
+                <div id="avatar-ring">
+                    <div id="avatar-initials">A</div>
+                    <button id="avatar-edit-btn" title="Change photo">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                </div>
+                <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+                <div id="avatar-text">
+                    <div id="sidebar-name">Anonymous</div>
+                    <div id="sidebar-meta-row">
+                        <div id="sidebar-school">-</div>
+                        <div id="sidebar-joined">Member since -</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav id="profile-nav">
+                <button class="nav-item active" data-tab="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>Profile</span>
+                </button>
+                <button class="nav-item" data-tab="listings">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>My Listings</span>
+                    <span class="nav-badge" id="listings-count">0</span>
+                </button>
+                <button class="nav-item" data-tab="favourites">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>Favourites</span>
+                    <span class="nav-badge" id="fav-count">0</span>
+                </button>
+                <button class="nav-item" data-tab="orders">
+                    <i class="fa-solid fa-box"></i>
+                    <span>Orders</span>
+                    <span class="nav-badge" id="orders-count">0</span>
+                </button>
+            </nav>
+
+            <button id="back-to-market" onclick="window.location='home.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Marketplace
+            </button>
+        </aside>
+
+        <!-- Main content -->
+        <main id="profile-main">
+
+            <!-- ── TAB: Profile ── -->
+            <section class="tab-panel active" id="tab-profile">
+                <div class="panel-header">
+                    <h1>Your Profile</h1>
+                    <!-- <p class="panel-sub">Manage your personal information and account security.</p> -->
+                </div>
+
+                <!-- Personal info card -->
+                <div class="settings-card" id="settings-card-info">
+                    <div class="settings-card-header">
+                        <div>
+                            <h2>Personal Information</h2>
+                            <p>Update your name and school.</p>
+                        </div>
+                        <button class="edit-toggle-btn" id="info-edit-btn">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                    </div>
+
+                    <div class="settings-fields" id="info-fields">
+                        <div class="field-row">
+                            <label>Full Name</label>
+                            <div class="field-display" id="display-name"></div>
+                            <input class="field-input hidden" id="input-name" type="text" placeholder="Your full name">
+                        </div>
+                        <div class="field-row">
+                            <label>School</label>
+                            <div class="field-display" id="display-school"></div>
+                            <input class="field-input hidden" id="input-school" type="text" placeholder="Your school or university">
+                        </div>
+                    </div>
+
+                    <div class="settings-actions hidden" id="info-actions">
+                        <button class="btn-ghost" id="info-cancel">Cancel</button>
+                        <button class="btn-primary" id="info-save">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- Email card -->
+                <div class="settings-card" id="settings-card-email">
+                    <div class="settings-card-header">
+                        <div>
+                            <h2>Email Address</h2>
+                            <p>A verification link will be sent to confirm any changes.</p>
+                        </div>
+                        <button class="edit-toggle-btn" id="email-edit-btn">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                    </div>
+
+                    <div class="settings-fields">
+                        <div class="field-row">
+                            <label>Current Email</label>
+                            <div class="field-display">
+                                <span id="current-email-display">—</span>
+                                <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                            </div>
+                        </div>
+
+                        <div id="email-change-form" class="hidden">
+                            <div class="field-row">
+                                <label>New Email</label>
+                                <input class="field-input" id="input-new-email" type="email" placeholder="new@example.com">
+                            </div>
+                            <div class="info-notice">
+                                <i class="fa-solid fa-circle-info"></i>
+                                We'll send a confirmation link to your new address. Your email won't change until you click it.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions hidden" id="email-actions">
+                        <button class="btn-ghost" id="email-cancel">Cancel</button>
+                        <button class="btn-primary" id="email-send">Send Verification</button>
+                    </div>
+
+                    <!-- Pending state (shown after sending) -->
+                    <div id="email-pending" class="hidden">
+                        <div class="info-notice pending">
+                            <i class="fa-solid fa-envelope"></i>
+                            Verification sent to <strong id="pending-email-display"></strong>. Check your inbox and click the link to confirm.
+                            <button class="link-btn" id="email-resend">Resend</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security card -->
+                <div class="settings-card" id="settings-card-pwd">
+                    <div class="settings-card-header">
+                        <div>
+                            <h2>Password & Security</h2>
+                            <p>Keep your account safe with a strong password.</p>
+                        </div>
+                        <button class="edit-toggle-btn" id="pwd-edit-btn">
+                            <i class="fa-solid fa-pen"></i> Change
+                        </button>
+                    </div>
+
+                    <div id="pwd-form" class="settings-fields hidden">
+                        <div class="field-row">
+                            <label>Current Password</label>
+                            <div class="pwd-wrap">
+                                <input class="field-input" id="input-pwd-current" type="password" placeholder="Enter current password">
+                                <button class="pwd-toggle" data-target="input-pwd-current" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="field-row">
+                            <label>New Password</label>
+                            <div class="pwd-wrap">
+                                <input class="field-input" id="input-pwd-new" type="password" placeholder="At least 8 characters">
+                                <button class="pwd-toggle" data-target="input-pwd-new" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                            <div class="pwd-strength" id="pwd-strength"></div>
+                        </div>
+                        <div class="field-row">
+                            <label>Confirm New Password</label>
+                            <div class="pwd-wrap">
+                                <input class="field-input" id="input-pwd-confirm" type="password" placeholder="Repeat new password">
+                                <button class="pwd-toggle" data-target="input-pwd-confirm" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions hidden" id="pwd-actions">
+                        <button class="btn-ghost" id="pwd-cancel">Cancel</button>
+                        <button class="btn-primary" id="pwd-save">Update Password</button>
+                    </div>
+                </div>
+
+                <!-- Danger zone -->
+                <div class="settings-card danger-card">
+                    <div class="settings-card-header">
+                        <div>
+                            <h2>Danger Zone</h2>
+                            <p>Permanently delete your account and all your data.</p>
+                        </div>
+                    </div>
+                    <button class="btn-danger" id="delete-account-btn">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Delete Account
+                    </button>
+                </div>
+            </section>
+
+            <!-- ── TAB: Listings ── -->
+            <section class="tab-panel" id="tab-listings">
+                <div class="panel-header">
+                    <h1>My Listings</h1>
+                    <button class="btn-primary" onclick="window.location='sell.html'">
+                        <i class="fa-solid fa-plus"></i> New Listing
+                    </button>
+                </div>
+
+                <div class="sub-tabs" id="listings-sub-tabs">
+                    <button class="sub-tab active" data-filter="active">Active</button>
+                    <button class="sub-tab" data-filter="sold">Sold</button>
+                    <button class="sub-tab" data-filter="expired">Expired</button>
+                </div>
+
+                <div id="listings-grid" class="items-grid"></div>
+            </section>
+
+            <!-- ── TAB: Favourites ── -->
+            <section class="tab-panel" id="tab-favourites">
+                <div class="panel-header">
+                    <h1>Favourites</h1>
+                    <p class="panel-sub">Items you've saved for later.</p>
+                </div>
+                <div id="favourites-grid" class="items-grid"></div>
+            </section>
+
+            <!-- ── TAB: Orders ── -->
+            <section class="tab-panel" id="tab-orders">
+                <div class="panel-header">
+                    <h1>Orders</h1>
+                    <p class="panel-sub">Track your buying activity.</p>
+                </div>
+
+                <div class="sub-tabs" id="orders-sub-tabs">
+                    <button class="sub-tab active" data-filter="in_progress">In Progress</button>
+                    <button class="sub-tab" data-filter="completed">Completed</button>
+                    <button class="sub-tab" data-filter="cancelled">Cancelled</button>
+                </div>
+
+                <div id="orders-list" class="orders-list"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="hidden">
+        <i id="toast-icon"></i>
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- Confirm modal -->
+    <div id="confirm-modal" class="hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-box">
+            <h3 id="modal-title">Are you sure?</h3>
+            <p id="modal-body">This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn-ghost" id="modal-cancel">Cancel</button>
+                <button class="btn-danger" id="modal-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="profile.js"></script>
+</body>
+</html>

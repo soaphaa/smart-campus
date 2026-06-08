@@ -48,16 +48,14 @@ function handleHashChange() {
     }
 }
 
-function goBackToPreviousPage(event) {
+window.goBackToPreviousPage = function (event) {
     event.preventDefault();
 
-    const path = window.location.origin + window.location.pathname;
-    if (document.referrer && document.referrer !== path && !document.referrer.includes(window.location.pathname)) {
-        window.location.href = document.referrer;
-    } else {
-        window.location.href = "index.html";
-    }
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    const fallback = urlParams.get('fallback') || "index.html";
+
+    window.location.href = fallback;
+};
 
 toLoginBtn.addEventListener("click", () => {
     // window.location.hash = "#login";
@@ -94,7 +92,8 @@ signUp.addEventListener("submit", async (e) => {
         // console.error("Sign up error: ", error.code);
         if (error.code === "auth/email-already-in-use") {
             alert("An account with this email already exists. Try logging in instead.");
-            window.location.hash = "#login";
+            window.history.replaceState(null, "", "#login");
+            handleHashChange();
         } else if (error.code === "auth/weak-password") {
             alert("Password should be at least 6 characters long.");
         } else {
@@ -113,7 +112,6 @@ login.addEventListener("submit", async (e) => {
         const userCredential = await signInWithEmailAndPassword(authentication, email, password);
         window.location.href = "home.html"
     } catch (error) {
-        // console.error("Login error: ", error.code);
 
         if (error.code === "auth/invalid-credential") {
             alert("Invalid email or password. Please try again.");

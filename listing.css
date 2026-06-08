@@ -313,6 +313,45 @@ body {
     font-weight: 500;
 }
 
+/* ── Favourite button — add these rules to listing.css ── */
+
+/* Base style for the Save/fav button (sits beside Message Seller) */
+#fav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Unfaved: outline heart */
+#fav-btn:not(.faved) {
+    background: #fff;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+
+#fav-btn:not(.faved):hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Faved: filled red heart */
+#fav-btn.faved {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+}
+
+#fav-btn.faved:hover {
+    background: #fee2e2;
+}
+
+#fav-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 800px) {
     #detail-main {
