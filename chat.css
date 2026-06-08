@@ -22,13 +22,17 @@ body { display: block; margin: 0; height: 100vh; overflow: hidden; background: v
 
 #sidebar-header h2 { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
 
-#new-chat-btn {
+#new-chat-btn, 
+#msg-form button {
     width: auto;
     padding: 0.4rem 0.9rem;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     border-radius: 2rem;
-    box-shadow: none;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
+    border: none;
+    color: white;
+    font-weight: 500;
 }
 
 #conv-list { list-style: none; margin: 0; padding: 0.4rem 0; overflow-y: auto; flex: 1; }

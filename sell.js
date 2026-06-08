@@ -27,6 +27,7 @@ const imageInput = document.getElementById("image-input");
 const previews = document.getElementById("image-previews");
 const submitBtn = document.getElementById("submit-btn");
 const formError = document.getElementById("form-error");
+const backBtn = document.getElementById("back-link")
 
 // ── State ────────────────────────────────────────────────
 let ME = null;
@@ -326,3 +327,13 @@ form.addEventListener("submit", async e => {
 function setError(msg) {
     formError.textContent = msg;
 }
+
+
+backBtn.addEventListener("click", () => {
+    event.preventDefault();
+    if (document.referrer !== "" && window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.location.href = "home.html";
+    }
+})    

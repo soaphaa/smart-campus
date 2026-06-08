@@ -1,5 +1,5 @@
 import { database, authentication } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import {
     collection, addDoc, onSnapshot,
     query, orderBy, serverTimestamp,
@@ -7,23 +7,29 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 // ── DOM ───────────────────────────────────────
-const convList   = document.getElementById("conv-list");
+const convList = document.getElementById("conv-list");
 const emptyState = document.getElementById("empty-state");
-const chatView   = document.getElementById("chat-view");
-const chatName   = document.getElementById("chat-name");
+const chatView = document.getElementById("chat-view");
+const chatName = document.getElementById("chat-name");
 const messagesEl = document.getElementById("messages");
-const msgForm    = document.getElementById("msg-form");
-const msgInput   = document.getElementById("msg-input");
-const backBtn    = document.getElementById("back-btn");
-const sidebar    = document.getElementById("sidebar");
+const msgForm = document.getElementById("msg-form");
+const msgInput = document.getElementById("msg-input");
+const backBtn = document.getElementById("back-btn");
+const sidebar = document.getElementById("sidebar");
 const newChatBtn = document.getElementById("new-chat-btn");
-const modal      = document.getElementById("new-chat-modal");
+const modal = document.getElementById("new-chat-modal");
 const modalClose = document.getElementById("modal-close");
-const userList   = document.getElementById("user-list");
+const userList = document.getElementById("user-list");
+const logoutBtn = document.getElementById("logout-btn");
 
-let ME           = null;
+let ME = null;
 let activeConvId = null;
 let stopListening = null;
+
+logoutBtn.addEventListener("click", async () => {
+    await signOut(authentication);
+    window.location.href = "index.html";
+});
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 onAuthStateChanged(authentication, async user => {
@@ -80,10 +86,10 @@ function loadConversations() {
         }
 
         mine.forEach(d => {
-            const data      = d.data();
-            const otherId   = data.participants.find(id => id !== ME.uid);
+            const data = d.data();
+            const otherId = data.participants.find(id => id !== ME.uid);
             const otherName = data.names?.[otherId] ?? "Unknown";
-            const lastMsg   = data.lastMessage ?? "No messages yet";
+            const lastMsg = data.lastMessage ?? "No messages yet";
 
             console.log(`  Conversation with: ${otherName} | Last message: "${lastMsg}"`);
 
@@ -122,7 +128,7 @@ function openConv(convId, name) {
             const msg = d.data();
             const div = document.createElement("div");
             const isMine = msg.senderId === ME.uid;
-            div.className   = "bubble " + (isMine ? "sent" : "received");
+            div.className = "bubble " + (isMine ? "sent" : "received");
             div.textContent = msg.text;
             messagesEl.appendChild(div);
 
@@ -146,7 +152,7 @@ msgForm.addEventListener("submit", async e => {
     await addDoc(collection(database, "conversations", activeConvId, "messages"), {
         text,
         senderId: ME.uid,
-        sentAt:   serverTimestamp(),
+        sentAt: serverTimestamp(),
     });
 
     await setDoc(doc(database, "conversations", activeConvId),
@@ -189,15 +195,24 @@ newChatBtn.addEventListener("click", async () => {
 
     others.forEach(d => {
         const data = d.data();
-        const li   = document.createElement("li");
+        const li = document.createElement("li");
         li.className = "user-item";
+
+        let pfp;
+        if (data.photoURL) {
+            pfp = `<img src="${data.photoURL}" alt="${data.name}"
+                style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+        } else {
+            pfp = data.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+        }
+
         li.innerHTML = `
-            <div class="user-avatar">${data.name[0].toUpperCase()}</div>
+            <div class="user-avatar" style="${data.photoURL ? "padding:0;overflow:hidden;" : ""}">${pfp}</div>
             <div>
                 <div class="user-name">${data.name}</div>
                 <div class="user-school">${data.school ?? data.email}</div>
             </div>
-        `;
+`;
         li.onclick = () => startConv(d.id, data.name);
         userList.appendChild(li);
     });
