@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="payment.css">
+    <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
+    <!-- Stripe.js — loads their secure card UI, never exposes card numbers to us -->
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+    <header id="pay-topbar">
+        <a id="back-link" href="home.html" class="back-link">
+            <i class="fa-solid fa-angle-left"></i>
+            <span>Back</span>
+        </a>
+        <span id="topbar-title">Checkout</span>
+    </header>
+
+    <!-- Loading state -->
+    <div id="status-screen">
+        <div class="status-emoji">⏳</div>
+        <div class="status-msg">Loading...</div>
+    </div>
+
+    <!-- Main checkout layout — hidden until listing + auth loaded -->
+    <div id="pay-main" class="hidden">
+
+        <!-- Left: order summary -->
+        <section id="order-summary">
+
+            <div id="listing-preview">
+                <div id="listing-img-wrap">
+                    <div id="listing-img-placeholder"><i class="fa-regular fa-image"></i></div>
+                </div>
+                <div id="listing-details">
+                    <div id="listing-title-text"></div>
+                    <div id="listing-seller"></div>
+                    <div id="listing-category-badge"></div>
+                </div>
+            </div>
+
+            <div id="price-breakdown">
+                <div class="price-row">
+                    <span>Item price</span>
+                    <span id="item-price">—</span>
+                </div>
+                <div class="price-row" id="rent-duration-row" style="display:none">
+                    <span>Rental period</span>
+                    <span id="rent-duration-label">—</span>
+                </div>
+                <div class="price-divider"></div>
+                <div class="price-row total">
+                    <span>Total</span>
+                    <span id="total-price">—</span>
+                </div>
+            </div>
+
+            <!-- Payment method picker -->
+            <div id="method-picker">
+                <p class="method-label">How would you like to pay?</p>
+                <div id="method-options">
+
+                    <label class="method-option" id="opt-wallet">
+                        <input type="radio" name="method" value="wallet" checked>
+                        <div class="method-icon">💳</div>
+                        <div class="method-info">
+                            <div class="method-name">Campus Wallet</div>
+                            <div class="method-sub">Balance: <strong id="wallet-balance">loading...</strong></div>
+                        </div>
+                        <i class="fa-solid fa-check method-check"></i>
+                    </label>
+
+                    <label class="method-option" id="opt-stripe">
+                        <input type="radio" name="method" value="stripe">
+                        <div class="method-icon">💳</div>
+                        <div class="method-info">
+                            <div class="method-name">Credit / Debit Card</div>
+                            <div class="method-sub">Powered by Stripe · Test mode</div>
+                        </div>
+                        <i class="fa-solid fa-check method-check"></i>
+                    </label>
+
+                    <label class="method-option" id="opt-cash">
+                        <input type="radio" name="method" value="cash">
+                        <div class="method-icon">💵</div>
+                        <div class="method-info">
+                            <div class="method-name">Cash at meetup</div>
+                            <div class="method-sub">Pay in person — listing held for 24h</div>
+                        </div>
+                        <i class="fa-solid fa-check method-check"></i>
+                    </label>
+
+                    <label class="method-option" id="opt-etransfer">
+                        <input type="radio" name="method" value="etransfer">
+                        <div class="method-icon">📨</div>
+                        <div class="method-info">
+                            <div class="method-name">Interac e-Transfer</div>
+                            <div class="method-sub">Send directly to seller's email</div>
+                        </div>
+                        <i class="fa-solid fa-check method-check"></i>
+                    </label>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right: payment form (changes based on method) -->
+        <section id="pay-form-section">
+
+            <!-- Stripe card form (shown when card selected) -->
+            <div id="stripe-form" class="pay-panel hidden">
+                <p class="pay-panel-title">Card details</p>
+                <p class="pay-panel-sub">Your card is processed securely by Stripe. We never see your card number.</p>
+                <div id="card-element"></div>
+                <div id="card-errors"></div>
+                <div id="test-card-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Test card: <strong>4242 4242 4242 4242</strong> · any future expiry · any CVC
+                </div>
+            </div>
+
+            <!-- Wallet form -->
+            <div id="wallet-form" class="pay-panel">
+                <p class="pay-panel-title">Pay from wallet</p>
+                <p class="pay-panel-sub">Funds are held in escrow until you confirm receipt at the meetup.</p>
+                <div id="wallet-status"></div>
+            </div>
+
+            <!-- Cash instructions -->
+            <div id="cash-form" class="pay-panel hidden">
+                <p class="pay-panel-title">Cash at meetup</p>
+                <p class="pay-panel-sub">The listing will be reserved for you for 24 hours. Bring exact change to the meetup.</p>
+                <div class="info-box">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>After confirming, you'll get a meetup QR code to verify the exchange with the seller.</span>
+                </div>
+            </div>
+
+            <!-- e-Transfer instructions -->
+            <div id="etransfer-form" class="pay-panel hidden">
+                <p class="pay-panel-title">Interac e-Transfer</p>
+                <p class="pay-panel-sub">Send the payment directly to the seller before the meetup.</p>
+                <div class="etransfer-detail">
+                    <span class="et-label">Send to</span>
+                    <span class="et-value" id="et-email">—</span>
+                </div>
+                <div class="etransfer-detail">
+                    <span class="et-label">Amount</span>
+                    <span class="et-value" id="et-amount">—</span>
+                </div>
+                <div class="etransfer-detail">
+                    <span class="et-label">Message</span>
+                    <span class="et-value" id="et-message">—</span>
+                </div>
+                <div class="info-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Click Confirm below after sending the e-Transfer. The seller will verify before releasing the item.</span>
+                </div>
+            </div>
+
+            <div id="pay-error"></div>
+
+            <button id="confirm-btn" disabled>
+                <span id="confirm-label">Confirm Payment</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <p id="security-note">
+                <i class="fa-solid fa-lock"></i>
+                Funds are locked in escrow and only released to the seller after you confirm receipt.
+            </p>
+
+        </section>
+
+    </div>
+
+    <script type="module" src="payment.js"></script>
+</body>
+</html>

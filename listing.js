@@ -159,12 +159,22 @@ function render() {
             <button class="action-btn primary" id="edit-btn"><i class="fa-regular fa-pen-to-square"></i>&nbsp; Edit</button>
             <button class="action-btn danger" id="delete-btn">Delete</button>
         `
-        : `<button class="action-btn primary" id="msg-btn"><i class="fa-regular fa-comment"></i>&nbsp; Message Seller</button>`;
+        : `
+            <button class="action-btn primary" id="buy-btn">
+                <i class="fa-solid fa-bag-shopping"></i>&nbsp; Buy Now
+            </button>
+            <button class="action-btn secondary" id="msg-btn">
+                <i class="fa-regular fa-comment"></i>&nbsp; Message
+            </button>
+        `;
 
     document.getElementById("edit-btn")?.addEventListener("click", () => {
         window.location.href = `sell.html?edit=${listingId}`;
     });
     document.getElementById("delete-btn")?.addEventListener("click", handleDelete);
+    document.getElementById("buy-btn")?.addEventListener("click", () => {
+        window.location.href = `payment.html?id=${listingId}`;
+    });
     document.getElementById("msg-btn")?.addEventListener("click", handleMessageSeller);
 }
 
