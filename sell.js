@@ -49,7 +49,7 @@ if (isEditMode) {
     pageTitle.textContent = "Edit Listing";
     submitBtn.textContent = "Save Changes";
     backLink.href = `listing.html?id=${editingId}`;
-    document.title = "Edit Listing — Commercium";
+    document.title = "Edit Listing";
 }
 
 // ── Auth gate ────────────────────────────────────────────
