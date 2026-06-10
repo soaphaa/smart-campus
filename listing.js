@@ -163,10 +163,13 @@ async function render() {
                 <span id="fav-label">${isFaved ? "Saved" : "Save"}</span>
             </button>
             <button class="action-btn primary" id="msg-btn">
-                <i class="fa-regular fa-comment"></i>&nbsp; Message Seller
+                <i class="fa-regular fa-comment"></i>&nbsp; Message Seller to Buy
             </button>
         `;
-        document.getElementById("msg-btn").addEventListener("click", handleMessageSeller);
+        // Buy happens inside the chat — message first, then offer to buy
+        document.getElementById("msg-btn").addEventListener("click", () =>
+            handleMessageSeller(`Hi! I'm interested in buying "${listing.title}" for $${listing.price?.toFixed(2) ?? "?"}. Is it still available?`)
+        );
         document.getElementById("fav-btn").addEventListener("click", handleToggleFavourite);
     }
 }
@@ -232,7 +235,7 @@ async function handleDelete() {
 }
 
 // ── Message seller ────────────────────────────────────────
-async function handleMessageSeller() {
+async function handleMessageSeller(prefillMsg = "") {
     const btn = document.getElementById("msg-btn");
     btn.disabled = true;
     btn.textContent = "Opening chat...";
@@ -253,16 +256,24 @@ async function handleMessageSeller() {
             const ref = await addDoc(collection(database, "conversations"), {
                 participants: [ME.uid, otherUid],
                 names: { [ME.uid]: ME.name, [otherUid]: otherName },
-                lastMessage: ""
+                lastMessage: "",
+                listingRef: { id: listingId, title: listing.title, price: listing.price }
             });
             convId = ref.id;
         }
-        window.location.href = `chat.html?conv=${convId}`;
+
+        // Pass the prefill message + listing context to chat
+        const query = new URLSearchParams({
+            conv: convId,
+            ...(prefillMsg ? { prefill: prefillMsg } : {}),
+            listing: listingId
+        });
+        window.location.href = `chat.html?${query}`;
     } catch (err) {
         console.error("Open chat failed:", err);
         alert("Couldn't open chat. " + (err.message ?? ""));
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-regular fa-comment"></i>&nbsp; Message Seller`;
+        btn.innerHTML = `<i class="fa-regular fa-comment"></i>&nbsp; Message Seller to Buy`;
     }
 }
 
@@ -303,10 +314,4 @@ function escapeHtml(s) {
     );
 }
 
-<<<<<<< HEAD
-function escapeAttr(s) {
-    return escapeHtml(s);
-}
-=======
 function escapeAttr(s) { return escapeHtml(s); }
->>>>>>> ed97fa93545e80146f56f5c90939ffe36e849fe3

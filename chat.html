@@ -1,61 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages</title>
-    <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="chat.css">
+    <title>Messages — Commercium</title>
     <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="chat.css">
     <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
 </head>
-
 <body>
-
-    <header id="topbar">
-        <a href="home.html" id="brand">Commercium</a>
-
-        <div class="topbar-actions" style="margin-left: auto;">
-            <button id="messages-btn" class="icon-btn active-icon" title="Messages">
-                <i class="fa-regular fa-comment"></i>
-            </button>
-            <button id="profile-btn" class="icon-btn" title="Profile" onclick="window.location='profile.html'">
-                <i class="fa-solid fa-user"></i>
-            </button>
-            <button id="logout-btn" class="icon-btn" title="Log out">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-        </div>
-    </header>
 
     <div id="app">
 
+        <!-- ── Sidebar ── -->
         <aside id="sidebar">
             <div id="sidebar-header">
-                <h2>Messages</h2>
-                <button id="new-chat-btn">+ New</button>
+                <a href="home.html" id="back-to-home" title="Back to marketplace">
+                    <i class="fa-solid fa-angle-left"></i>
+                </a>
+                <span id="sidebar-title">Messages</span>
+                <button id="new-chat-btn" title="New message">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
             </div>
             <ul id="conv-list"></ul>
         </aside>
 
+        <!-- ── Main panel ── -->
         <main id="main">
+
+            <!-- Empty state -->
             <div id="empty-state">
+                <div id="empty-icon"><i class="fa-regular fa-comments"></i></div>
                 <p>Select a conversation or start a new one</p>
             </div>
 
+            <!-- Active conversation -->
             <div id="chat-view" class="hidden">
+
                 <div id="chat-header">
-                    <button id="back-btn">← Back</button>
-                    <span id="chat-name"></span>
-                </div>
-                <div id="messages"></div>
-                <form id="msg-form">
-                    <div class="input-container">
-                        <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
+                    <button id="back-btn" title="Back to conversations">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <div id="chat-header-info">
+                        <div id="chat-avatar"></div>
+                        <div>
+                            <div id="chat-name"></div>
+                            <div id="chat-status">Active now</div>
+                        </div>
                     </div>
-                    <button type="submit">Send</button>
+                    <div id="chat-header-actions">
+                        <button class="hdr-btn" id="view-listing-btn" title="View listing" style="display:none">
+                            <i class="fa-solid fa-tag"></i>
+                        </button>
+                        <button class="hdr-btn" id="logout-btn" title="Log out">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Listing context banner — shown when coming from a listing -->
+                <div id="listing-banner" class="hidden">
+                    <div id="banner-img"><i class="fa-regular fa-image"></i></div>
+                    <div id="banner-info">
+                        <div id="banner-title"></div>
+                        <div id="banner-price"></div>
+                    </div>
+                    <button id="buy-now-btn" class="buy-btn">
+                        Buy Now
+                    </button>
+                </div>
+
+                <div id="messages"></div>
+
+                <form id="msg-form">
+                    <button type="button" id="attach-btn" class="form-icon-btn" title="Attach listing">
+                        <i class="fa-solid fa-paperclip"></i>
+                    </button>
+                    <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
+                    <button type="submit" id="send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
                 </form>
+
             </div>
         </main>
 
@@ -65,8 +92,12 @@
     <div id="new-chat-modal" class="hidden">
         <div id="modal-box">
             <div id="modal-header">
-                <span>Start a conversation</span>
-                <button id="modal-close">✕</button>
+                <span>New Message</span>
+                <button id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modal-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="modal-search" placeholder="Search people...">
             </div>
             <ul id="user-list"></ul>
         </div>
@@ -74,5 +105,4 @@
 
     <script type="module" src="chat.js"></script>
 </body>
-
 </html>
