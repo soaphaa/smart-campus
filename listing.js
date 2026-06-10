@@ -303,10 +303,6 @@ function escapeHtml(s) {
     );
 }
 
-<<<<<<< HEAD
 function escapeAttr(s) {
     return escapeHtml(s);
 }
-=======
-function escapeAttr(s) { return escapeHtml(s); }
->>>>>>> ed97fa93545e80146f56f5c90939ffe36e849fe3
