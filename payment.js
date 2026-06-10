@@ -8,7 +8,7 @@ import {
 // ── Stripe public key (test mode — safe to expose in frontend) ─────────────────
 // Replace with your actual test publishable key from dashboard.stripe.com
 const STRIPE_PUBLIC_KEY = "pk_test_51Tey1aI8o9RjXfQwuPl1uW61xZq6ZQdAJM3UxXBkZAthVSWY9qRxcfq6qofTBiYo3uwRCChgqudW2S8kE4E7Yulx00TbPBqeH5";
-const stripe = Stripe(STRIPE_PUBLIC_KEY);
+let stripe = null; // initialized lazily inside renderPage() once Stripe.js is loaded
 
 // ── DOM ────────────────────────────────────────────────────────────────────────
 const statusScreen  = document.getElementById("status-screen");
@@ -144,6 +144,9 @@ function renderPage() {
 
     updateWalletStatus(price);
     updateETransferDetails();
+
+    // Initialize Stripe here — by now the CDN script has finished loading
+    stripe = Stripe(STRIPE_PUBLIC_KEY);
     initStripeElement();
 
     confirmBtn.disabled = false;
@@ -356,12 +359,10 @@ async function confirmCashOrETransfer(method) {
     goToConfirmation(method);
 }
 
-// ── Redirect to confirmation page ─────────────────────────────────────────────
 function goToConfirmation(method) {
     window.location.href = `confirmation.html?id=${listingId}&method=${method}`;
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
 function showStatus(emoji, msg) {
     payMain.classList.add("hidden");
     statusScreen.classList.remove("hidden");
