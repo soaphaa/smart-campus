@@ -250,8 +250,9 @@ button {
 
 /* ── Category chips ──────────────────────────────────────── */
 #category-row {
+    width: 100%;
     display: flex;
-    gap: 0.6rem;
+    gap: 1rem;
     padding: 1rem 1.5rem;
     overflow-x: auto;
     scrollbar-width: none;
@@ -262,20 +263,25 @@ button {
 }
 
 .chip {
+    flex: 1;
+    text-align: center;
     border: 1px solid var(--border-color);
     background: #fff;
     color: var(--text-main);
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.6rem;
     border-radius: 999px;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     font-weight: 500;
+    text-transform: uppercase;
     white-space: nowrap;
     transition: all 0.15s ease;
+    color: white;
 }
 
 .chip:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+    transform: translateY(-1px);
+    filter: brightness(1.2);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.15);
 }
 
 .chip.active {
@@ -529,7 +535,7 @@ button {
 /* ── Grid ────────────────────────────────────────────────── */
 #grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.25rem;
     padding: 0.5rem 1.5rem 3rem;
 }
@@ -552,7 +558,7 @@ button {
 
 .card-image-wrap {
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 7/6;
     background: var(--background-color);
     overflow: hidden;
 }
@@ -578,9 +584,9 @@ button {
     position: absolute;
     top: 0.6rem;
     left: 0.6rem;
-    padding: 0.25rem 0.6rem;
+    padding: 0.25rem 1rem;
     border-radius: 999px;
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #fff;
     text-transform: uppercase;
@@ -624,6 +630,10 @@ button {
     }
 }
 
+.cat-all {
+    color: black;
+}
+
 .cat-new {
     background: var(--cat-new);
 }
@@ -649,8 +659,8 @@ button {
 }
 
 .card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1.6rem;
+    font-weight: 500;
     color: var(--text-main);
     line-height: 1.3;
     display: -webkit-box;
@@ -660,7 +670,7 @@ button {
 }
 
 .card-price {
-    font-size: 1.15rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--primary-color);
 }
@@ -677,8 +687,8 @@ button {
     justify-content: space-between;
     align-items: center;
     margin-top: auto;
-    padding-top: 0.4rem;
-    font-size: 0.75rem;
+    padding-top: 0.2rem;
+    font-size: 1.05rem;
     color: var(--text-prompt);
 }
 
