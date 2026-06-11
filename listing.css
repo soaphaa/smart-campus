@@ -167,7 +167,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1.25rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--text-prompt);
 }
 
@@ -187,7 +187,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: 1rem 1.2rem;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--text-main);
     line-height: 1.55;
     white-space: pre-wrap;
@@ -206,13 +206,13 @@ body {
 }
 
 .seller-avatar {
-    width: 3rem;
-    height: 3rem;
+    width: 3.5rem;
+    height: 3.5rem;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
     color: #fff;
     font-weight: 700;
-    font-size: 1.15rem;
+    font-size: 1.4rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -230,11 +230,11 @@ body {
 .seller-name {
     font-weight: 600;
     color: var(--text-main);
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .seller-school {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
     color: var(--text-prompt);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -242,7 +242,7 @@ body {
 }
 
 .seller-email {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
     color: var(--primary-color);
     text-decoration: none;
     overflow: hidden;
