@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed</title>
+    <title>Order Confirmed — Smart Campus</title>
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="payment.css">
     <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
-    <!-- QR code generator (zero dependencies, MIT license) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <!-- QR code scanner -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
-    <header id="conf-topbar">
+    <header id="pay-topbar">
         <a href="home.html" class="back-link">
-            <i class="fa-solid fa-angle-left"></i> Back to marketplace
+            <i class="fa-solid fa-angle-left"></i> Marketplace
         </a>
+        <span id="topbar-title">Order Confirmed</span>
     </header>
 
     <!-- Loading -->
@@ -26,75 +27,69 @@
         <div class="status-msg">Loading your order...</div>
     </div>
 
-    <!-- Main confirmed view -->
+    <!-- Main -->
     <div id="conf-main" class="hidden">
 
-        <!-- ── Step indicator ── -->
+        <!-- Step tracker -->
         <div id="steps">
-            <div class="step" id="step-paid">
+            <div class="step">
                 <div class="step-dot done"><i class="fa-solid fa-check"></i></div>
                 <div class="step-label">Paid</div>
             </div>
             <div class="step-line" id="line-1"></div>
-            <div class="step" id="step-meetup">
+            <div class="step">
                 <div class="step-dot" id="dot-meetup"></div>
                 <div class="step-label">Meetup</div>
             </div>
             <div class="step-line" id="line-2"></div>
-            <div class="step" id="step-done">
+            <div class="step">
                 <div class="step-dot" id="dot-done"></div>
                 <div class="step-label">Complete</div>
             </div>
         </div>
 
-        <!-- ── Order summary card ── -->
-        <div id="order-card">
-            <div id="order-img-wrap">
-                <div id="order-img-placeholder"><i class="fa-regular fa-image"></i></div>
-            </div>
+        <!-- Order summary -->
+        <div class="conf-card" id="order-summary-card">
+            <div id="order-img-wrap"><i class="fa-regular fa-image"></i></div>
             <div id="order-info">
                 <div id="order-title"></div>
                 <div id="order-meta"></div>
-                <div id="order-amount"></div>
+                <div id="order-price"></div>
             </div>
         </div>
 
-        <!-- ── QR section (buyer view) ── -->
-        <div id="qr-section" class="hidden">
-            <div id="qr-header">
-                <div id="qr-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <!-- Buyer: QR code to show seller -->
+        <div class="conf-card hidden" id="qr-section">
+            <div class="conf-card-header">
+                <div class="conf-icon indigo"><i class="fa-solid fa-qrcode"></i></div>
                 <div>
-                    <div id="qr-title">Your Handover QR Code</div>
-                    <div id="qr-sub">Show this to the seller at the meetup to release funds</div>
+                    <div class="conf-title">Show this QR to the seller</div>
+                    <div class="conf-sub">Seller scans it at the meetup to release your payment from escrow</div>
                 </div>
             </div>
-
             <div id="qr-box">
                 <div id="qr-canvas"></div>
-                <div id="qr-token-display"></div>
+                <div id="qr-token"></div>
             </div>
-
-            <div class="info-box">
+            <div class="info-row">
                 <i class="fa-solid fa-shield-halved"></i>
-                <span>This QR code is unique to your transaction. The seller scans it to confirm you're the right person and release the payment from escrow.</span>
+                <span>Unique to this transaction. Expires every 5 minutes — screenshots can't be reused.</span>
             </div>
-
-            <div id="qr-timer-wrap">
+            <div id="qr-timer">
                 <i class="fa-regular fa-clock"></i>
-                <span id="qr-timer-label">QR refreshes in <strong id="qr-countdown">05:00</strong></span>
+                Refreshes in <strong id="qr-countdown">05:00</strong>
             </div>
         </div>
 
-        <!-- ── Scanner section (seller view) ── -->
-        <div id="scanner-section" class="hidden">
-            <div id="scanner-header">
-                <div id="scanner-icon"><i class="fa-solid fa-camera"></i></div>
+        <!-- Seller: scan the buyer's QR -->
+        <div class="conf-card hidden" id="scanner-section">
+            <div class="conf-card-header">
+                <div class="conf-icon teal"><i class="fa-solid fa-camera"></i></div>
                 <div>
-                    <div id="scanner-title">Scan Buyer's QR Code</div>
-                    <div id="scanner-sub">Point your camera at the buyer's screen to confirm the handover</div>
+                    <div class="conf-title">Scan the buyer's QR code</div>
+                    <div class="conf-sub">Confirms identity and releases payment to your wallet</div>
                 </div>
             </div>
-
             <div id="scanner-box">
                 <div id="reader"></div>
                 <button id="start-scan-btn">
@@ -102,32 +97,33 @@
                 </button>
                 <div id="scan-result" class="hidden"></div>
             </div>
-
-            <div class="info-box warning">
+            <div class="info-row warning">
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>Only scan after physically verifying the item matches the listing. Once scanned, funds are released immediately.</span>
+                <span>Physically verify the item before scanning. Funds release immediately and cannot be reversed.</span>
             </div>
         </div>
 
-        <!-- ── Cash/e-Transfer instructions ── -->
-        <div id="manual-section" class="hidden">
-            <div class="info-box">
+        <!-- Cash / e-Transfer instructions -->
+        <div class="conf-card hidden" id="manual-section">
+            <div class="info-row">
                 <i class="fa-solid fa-circle-info"></i>
-                <span id="manual-instructions"></span>
+                <span id="manual-text"></span>
             </div>
         </div>
 
-        <!-- ── Completed state ── -->
-        <div id="completed-section" class="hidden">
-            <div id="completed-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <div id="completed-title">Transaction Complete</div>
-            <div id="completed-sub"></div>
+        <!-- Transaction complete -->
+        <div class="conf-card hidden" id="completed-section">
+            <div id="completed-inner">
+                <div id="completed-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div id="completed-title">Transaction Complete!</div>
+                <div id="completed-sub"></div>
+            </div>
         </div>
 
-        <!-- Action buttons -->
-        <div id="action-btns">
-            <button id="primary-action-btn" class="hidden"></button>
-            <a href="home.html" class="secondary-btn">Back to Marketplace</a>
+        <!-- Buttons -->
+        <div id="conf-actions">
+            <button id="primary-btn" class="hidden"></button>
+            <a href="home.html" id="back-to-market">Back to Marketplace</a>
         </div>
 
     </div>

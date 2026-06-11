@@ -3,179 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
+    <title>Checkout — Smart Campus</title>
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="payment.css">
     <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
-    <!-- Stripe.js — loads their secure card UI, never exposes card numbers to us -->
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
 
-    <header id="pay-topbar">
+    <header id="topbar">
         <a id="back-link" href="home.html" class="back-link">
-            <i class="fa-solid fa-angle-left"></i>
-            <span>Back</span>
+            <i class="fa-solid fa-angle-left"></i> Back
         </a>
         <span id="topbar-title">Checkout</span>
     </header>
 
-    <!-- Loading state -->
+    <!-- Loading screen -->
     <div id="status-screen">
         <div class="status-emoji">⏳</div>
         <div class="status-msg">Loading...</div>
     </div>
 
-    <!-- Main checkout layout — hidden until listing + auth loaded -->
+    <!-- ══ CHECKOUT PHASE ══ -->
     <div id="pay-main" class="hidden">
 
-        <!-- Left: order summary -->
         <section id="order-summary">
 
-            <div id="listing-preview">
-                <div id="listing-img-wrap">
-                    <div id="listing-img-placeholder"><i class="fa-regular fa-image"></i></div>
+            <div class="card" id="order-card-checkout">
+                <div class="card-header">Order Summary</div>
+                <div id="listing-preview">
+                    <div id="listing-img-wrap"><i class="fa-regular fa-image"></i></div>
+                    <div id="listing-details">
+                        <div id="listing-title-text"></div>
+                        <div id="listing-seller"></div>
+                        <div id="listing-category-badge"></div>
+                    </div>
                 </div>
-                <div id="listing-details">
-                    <div id="listing-title-text"></div>
-                    <div id="listing-seller"></div>
-                    <div id="listing-category-badge"></div>
-                </div>
-            </div>
-
-            <div id="price-breakdown">
-                <div class="price-row">
-                    <span>Item price</span>
-                    <span id="item-price">—</span>
-                </div>
-                <div class="price-row" id="rent-duration-row" style="display:none">
-                    <span>Rental period</span>
-                    <span id="rent-duration-label">—</span>
-                </div>
-                <div class="price-divider"></div>
-                <div class="price-row total">
-                    <span>Total</span>
-                    <span id="total-price">—</span>
+                <div id="price-breakdown">
+                    <div class="price-row"><span>Item price</span><span id="item-price">—</span></div>
+                    <div class="price-row" id="rent-row" style="display:none">
+                        <span>Rental period</span><span id="rent-label">—</span>
+                    </div>
+                    <div class="price-row total"><span>Total</span><span id="total-price">—</span></div>
                 </div>
             </div>
 
-            <!-- Payment method picker -->
-            <div id="method-picker">
-                <p class="method-label">How would you like to pay?</p>
+            <div class="card">
+                <div class="card-header">Payment Method</div>
                 <div id="method-options">
-
-                    <label class="method-option" id="opt-wallet">
+                    <label class="method-option">
                         <input type="radio" name="method" value="wallet" checked>
-                        <div class="method-icon">💳</div>
+                        <span class="method-icon">🪙</span>
                         <div class="method-info">
                             <div class="method-name">Campus Wallet</div>
                             <div class="method-sub">Balance: <strong id="wallet-balance">loading...</strong></div>
                         </div>
                         <i class="fa-solid fa-check method-check"></i>
                     </label>
-
-                    <label class="method-option" id="opt-stripe">
+                    <label class="method-option">
                         <input type="radio" name="method" value="stripe">
-                        <div class="method-icon">💳</div>
+                        <span class="method-icon">💳</span>
                         <div class="method-info">
                             <div class="method-name">Credit / Debit Card</div>
                             <div class="method-sub">Powered by Stripe · Test mode</div>
                         </div>
                         <i class="fa-solid fa-check method-check"></i>
                     </label>
-
-                    <label class="method-option" id="opt-cash">
+                    <label class="method-option">
                         <input type="radio" name="method" value="cash">
-                        <div class="method-icon">💵</div>
+                        <span class="method-icon">💵</span>
                         <div class="method-info">
                             <div class="method-name">Cash at meetup</div>
-                            <div class="method-sub">Pay in person — listing held for 24h</div>
+                            <div class="method-sub">Pay in person · listing held 24h</div>
                         </div>
                         <i class="fa-solid fa-check method-check"></i>
                     </label>
-
-                    <label class="method-option" id="opt-etransfer">
+                    <label class="method-option">
                         <input type="radio" name="method" value="etransfer">
-                        <div class="method-icon">📨</div>
+                        <span class="method-icon">📨</span>
                         <div class="method-info">
                             <div class="method-name">Interac e-Transfer</div>
                             <div class="method-sub">Send directly to seller's email</div>
                         </div>
                         <i class="fa-solid fa-check method-check"></i>
                     </label>
-
                 </div>
             </div>
 
         </section>
 
-        <!-- Right: payment form (changes based on method) -->
         <section id="pay-form-section">
 
-            <!-- Stripe card form (shown when card selected) -->
-            <div id="stripe-form" class="pay-panel hidden">
-                <p class="pay-panel-title">Card details</p>
-                <p class="pay-panel-sub">Your card is processed securely by Stripe. We never see your card number.</p>
-                <div id="card-element"></div>
-                <div id="card-errors"></div>
-                <div id="test-card-hint">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Test card: <strong>4242 4242 4242 4242</strong> · any future expiry · any CVC
+            <div class="card" id="wallet-panel">
+                <div class="card-header">Campus Wallet</div>
+                <div class="panel-body">
+                    <p class="panel-sub">Funds held in escrow until you confirm receipt at the meetup.</p>
+                    <div id="wallet-status"></div>
                 </div>
             </div>
 
-            <!-- Wallet form -->
-            <div id="wallet-form" class="pay-panel">
-                <p class="pay-panel-title">Pay from wallet</p>
-                <p class="pay-panel-sub">Funds are held in escrow until you confirm receipt at the meetup.</p>
-                <div id="wallet-status"></div>
-            </div>
-
-            <!-- Cash instructions -->
-            <div id="cash-form" class="pay-panel hidden">
-                <p class="pay-panel-title">Cash at meetup</p>
-                <p class="pay-panel-sub">The listing will be reserved for you for 24 hours. Bring exact change to the meetup.</p>
-                <div class="info-box">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>After confirming, you'll get a meetup QR code to verify the exchange with the seller.</span>
+            <div class="card hidden" id="stripe-panel">
+                <div class="card-header">Card Details</div>
+                <div class="panel-body">
+                    <p class="panel-sub">Processed securely by Stripe. We never see your card number.</p>
+                    <div id="card-element"></div>
+                    <div id="card-errors"></div>
+                    <div id="test-hint">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Test card: <strong>4242 4242 4242 4242</strong> · any future date · any CVC
+                    </div>
                 </div>
             </div>
 
-            <!-- e-Transfer instructions -->
-            <div id="etransfer-form" class="pay-panel hidden">
-                <p class="pay-panel-title">Interac e-Transfer</p>
-                <p class="pay-panel-sub">Send the payment directly to the seller before the meetup.</p>
-                <div class="etransfer-detail">
-                    <span class="et-label">Send to</span>
-                    <span class="et-value" id="et-email">—</span>
+            <div class="card hidden" id="cash-panel">
+                <div class="card-header">Cash at Meetup</div>
+                <div class="panel-body">
+                    <p class="panel-sub">Listing reserved for 24 hours. Bring exact change.</p>
+                    <div class="info-box">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>After confirming you'll get a QR code to verify the exchange at the meetup.</span>
+                    </div>
                 </div>
-                <div class="etransfer-detail">
-                    <span class="et-label">Amount</span>
-                    <span class="et-value" id="et-amount">—</span>
-                </div>
-                <div class="etransfer-detail">
-                    <span class="et-label">Message</span>
-                    <span class="et-value" id="et-message">—</span>
-                </div>
-                <div class="info-box">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>Click Confirm below after sending the e-Transfer. The seller will verify before releasing the item.</span>
+            </div>
+
+            <div class="card hidden" id="etransfer-panel">
+                <div class="card-header">Interac e-Transfer</div>
+                <div class="panel-body">
+                    <p class="panel-sub">Send payment to the seller, then confirm below.</p>
+                    <div class="et-row"><span class="et-label">Send to</span><span class="et-value" id="et-email">—</span></div>
+                    <div class="et-row"><span class="et-label">Amount</span><span class="et-value" id="et-amount">—</span></div>
+                    <div class="et-row"><span class="et-label">Message</span><span class="et-value" id="et-message">—</span></div>
+                    <div class="info-box" style="margin-top:0.8rem">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Click Confirm after sending. Seller verifies before releasing the item.</span>
+                    </div>
                 </div>
             </div>
 
             <div id="pay-error"></div>
 
             <button id="confirm-btn" disabled>
-                <span id="confirm-label">Confirm Payment</span>
+                <i class="fa-solid fa-lock"></i>
+                <span id="confirm-label">Confirm &amp; Pay</span>
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
 
             <p id="security-note">
-                <i class="fa-solid fa-lock"></i>
-                Funds are locked in escrow and only released to the seller after you confirm receipt.
+                <i class="fa-solid fa-shield-halved"></i>
+                Funds locked in escrow — released only after QR scan at meetup
             </p>
 
         </section>
+    </div>
+
+    <!-- ══ CONFIRMATION PHASE ══ -->
+    <div id="conf-main" class="hidden">
+
+        <div id="steps">
+            <div class="step">
+                <div class="step-dot done"><i class="fa-solid fa-check"></i></div>
+                <div class="step-label">Paid</div>
+            </div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step">
+                <div class="step-dot" id="dot-meetup"></div>
+                <div class="step-label">Meetup</div>
+            </div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step">
+                <div class="step-dot" id="dot-done"></div>
+                <div class="step-label">Complete</div>
+            </div>
+        </div>
+
+        <div class="card" id="conf-order-card">
+            <div id="conf-img-wrap"><i class="fa-regular fa-image"></i></div>
+            <div>
+                <div id="conf-title"></div>
+                <div id="conf-meta"></div>
+                <div id="conf-amount"></div>
+            </div>
+        </div>
+
+        <!-- Buyer: show QR code -->
+        <div class="card hidden" id="qr-section">
+            <div class="card-header">Your Handover QR Code</div>
+            <div class="panel-body">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div>
+                        <div class="section-title">Show this to the seller at the meetup</div>
+                        <div class="section-sub">Seller scans to confirm your identity and release payment</div>
+                    </div>
+                </div>
+                <div id="qr-box">
+                    <div id="qr-canvas"></div>
+                    <div id="qr-token"></div>
+                </div>
+                <div class="info-box">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Unique to your transaction. Expires every 5 minutes so screenshots can't be reused.</span>
+                </div>
+                <div id="qr-timer">
+                    <i class="fa-regular fa-clock"></i>
+                    Refreshes in <strong id="qr-countdown">05:00</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seller: scan buyer's QR -->
+        <div class="card hidden" id="scanner-section">
+            <div class="card-header">Scan Buyer's QR Code</div>
+            <div class="panel-body">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fa-solid fa-camera"></i></div>
+                    <div>
+                        <div class="section-title">Point camera at buyer's screen</div>
+                        <div class="section-sub">Confirms identity and releases payment from escrow</div>
+                    </div>
+                </div>
+                <div id="scanner-box">
+                    <div id="reader"></div>
+                    <button id="start-scan-btn">
+                        <i class="fa-solid fa-camera"></i> Open Camera
+                    </button>
+                    <div class="hidden" id="scan-result"></div>
+                </div>
+                <div class="info-box warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Verify the item physically before scanning. Funds release immediately and cannot be reversed.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cash / e-transfer: plain instructions -->
+        <div class="card hidden" id="manual-section">
+            <div class="panel-body">
+                <div class="info-box">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span id="manual-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction complete -->
+        <div class="card hidden" id="completed-section">
+            <div class="panel-body" style="text-align:center">
+                <div id="completed-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div id="completed-title">Transaction Complete</div>
+                <div id="completed-sub"></div>
+            </div>
+        </div>
+
+        <div id="conf-actions">
+            <button id="primary-btn" class="hidden"></button>
+            <a href="home.html" class="secondary-btn">Back to Marketplace</a>
+        </div>
 
     </div>
 
