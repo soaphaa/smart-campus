@@ -20,8 +20,8 @@ const listingSeller = document.getElementById("listing-seller");
 const listingBadge  = document.getElementById("listing-category-badge");
 const itemPriceEl   = document.getElementById("item-price");
 const totalPriceEl  = document.getElementById("total-price");
-const rentRow       = document.getElementById("rent-duration-row");
-const rentLabel     = document.getElementById("rent-duration-label");
+const rentRow       = document.getElementById("rent-row");
+const rentLabel     = document.getElementById("rent-label");
 const walletBalance = document.getElementById("wallet-balance");
 const walletStatus  = document.getElementById("wallet-status");
 const methodInputs  = document.querySelectorAll("input[name='method']");
@@ -34,10 +34,10 @@ const etMessage     = document.getElementById("et-message");
 
 // Panels
 const panels = {
-    wallet:    document.getElementById("wallet-form"),
-    stripe:    document.getElementById("stripe-form"),
-    cash:      document.getElementById("cash-form"),
-    etransfer: document.getElementById("etransfer-form"),
+    wallet:    document.getElementById("wallet-panel"),
+    stripe:    document.getElementById("stripe-panel"),
+    cash:      document.getElementById("cash-panel"),
+    etransfer: document.getElementById("etransfer-panel"),
 };
 
 // ── State ──────────────────────────────────────────────────────────────────────
@@ -74,6 +74,13 @@ onAuthStateChanged(authentication, async user => {
         walletBalance: userData.walletBalance ?? 0,
     };
 
+    // DEMO: give $50 wallet to any user with 0 balance
+    if (ME.walletBalance === 0) {
+        const { setDoc: sd, doc: fd } = await import("https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js");
+        await sd(fd(database, "users", user.uid), { walletBalance: 50 }, { merge: true });
+        ME.walletBalance = 50;
+        console.log("Demo: seeded $50 wallet for", ME.name);
+    }
     console.log(`Checkout loaded for: ${ME.name} | Wallet: $${ME.walletBalance.toFixed(2)}`);
 
     if (listingId) await loadListing();
@@ -259,7 +266,9 @@ async function payWithWallet() {
         const listingSnap = await tx.get(listingRef);
 
         if (!listingSnap.exists()) throw new Error("Listing no longer exists.");
-        if (listingSnap.data().status === "sold") throw new Error("Someone else just bought this.");
+        const st = listingSnap.data().status;
+        if (["sold","rented","escrow","pending"].includes(st)) throw new Error("This listing is no longer available.");
+        if (st === "requested" && listingSnap.data().buyerId !== ME.uid) throw new Error("Someone else requested this item first.");
 
         const currentBalance = userSnap.data().walletBalance ?? 0;
         if (currentBalance < price) throw new Error("Insufficient balance.");

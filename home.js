@@ -1,4 +1,3 @@
-
 import { database, authentication } from "./firebase-config.js";
 import {
     onAuthStateChanged, signOut

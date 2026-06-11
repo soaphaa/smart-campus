@@ -65,20 +65,31 @@ async function loadAndRender() {
         const isBuyer  = listing.buyerId  === ME.uid;
         const isSeller = listing.sellerId === ME.uid;
 
+        console.log("Confirmation debug:", {
+            listingId, status: listing.status,
+            buyerId: listing.buyerId, sellerId: listing.sellerId,
+            myUid: ME.uid, isBuyer, isSeller, payMethod
+        });
+
         // Already completed
         if (listing.status === "sold" || listing.status === "rented") {
             showCompleted(isSeller);
             return;
         }
 
-        // Show the right section based on who's viewing
+        // Valid active states: escrow, pending (cash/etransfer), approved
+        const validStatuses = ["escrow", "pending", "approved", "requested"];
+        if (!validStatuses.includes(listing.status)) {
+            showStatus("⚠️", `Unexpected listing status: ${listing.status}. Please contact support.`);
+            return;
+        }
+
         if (isBuyer) {
             dotMeetup.classList.add("active");
             if (payMethod === "wallet" || payMethod === "stripe") {
                 qrSection.classList.remove("hidden");
                 generateQR();
             } else {
-                // Cash or e-transfer — just show instructions
                 manualSection.classList.remove("hidden");
                 document.getElementById("manual-instructions").textContent =
                     payMethod === "cash"
@@ -90,7 +101,9 @@ async function loadAndRender() {
             scannerSection.classList.remove("hidden");
             setupScanner();
         } else {
-            showStatus("🚫", "You're not part of this transaction.");
+            // Neither buyer nor seller — show helpful debug info
+            console.error("Not part of transaction. listing.buyerId:", listing.buyerId, "ME.uid:", ME.uid);
+            showStatus("🚫", "You\'re not part of this transaction.");
         }
 
     } catch (err) {

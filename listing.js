@@ -1,76 +1,61 @@
 import { database, authentication } from "./firebase-config.js";
-import {
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import {
     doc, getDoc, setDoc, deleteDoc, updateDoc, increment,
-    collection, getDocs, addDoc
+    collection, getDocs, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-// ── DOM ──────────────────────────────────────────────────
-const statusScreen = document.getElementById("status-screen");
-const detailMain = document.getElementById("detail-main");
+// ── DOM ───────────────────────────────────────────────────
+const statusScreen  = document.getElementById("status-screen");
+const detailMain    = document.getElementById("detail-main");
 const mainImageWrap = document.getElementById("main-image-wrap");
-const thumbRow = document.getElementById("thumb-row");
-const categoryEl = document.getElementById("detail-category");
-const titleEl = document.getElementById("detail-title");
-const priceEl = document.getElementById("detail-price");
-const metaEl = document.getElementById("detail-meta");
+const thumbRow      = document.getElementById("thumb-row");
+const categoryEl    = document.getElementById("detail-category");
+const titleEl       = document.getElementById("detail-title");
+const priceEl       = document.getElementById("detail-price");
+const metaEl        = document.getElementById("detail-meta");
 const descriptionEl = document.getElementById("detail-description");
-const sellerAvatar = document.getElementById("seller-avatar");
-const sellerName = document.getElementById("seller-name");
-const sellerSchool = document.getElementById("seller-school");
-const sellerEmail = document.getElementById("seller-email");
-const actionsEl = document.getElementById("actions");
+const sellerAvatar  = document.getElementById("seller-avatar");
+const sellerName    = document.getElementById("seller-name");
+const sellerSchool  = document.getElementById("seller-school");
+const sellerEmail   = document.getElementById("seller-email");
+const actionsEl     = document.getElementById("actions");
 
-// ── State ────────────────────────────────────────────────
-let ME = null;
+let ME        = null;
 let listingId = null;
-let listing = null;
-let isFaved = false;   // tracks current favourite state
+let listing   = null;
+let isFaved   = false;
 
-const CATEGORY_LABEL = { new: "New", used: "Used", rent: "Rent", exchange: "Exchange" };
+const CATEGORY_LABEL = { new:"New", used:"Used", rent:"Rent", exchange:"Exchange" };
 
-// ── Init ─────────────────────────────────────────────────
 const params = new URLSearchParams(window.location.search);
-listingId = params.get("id");
-
+listingId    = params.get("id");
 if (!listingId) showStatus("⚠️", "No listing ID provided.");
 
 onAuthStateChanged(authentication, async user => {
-    if (!user) {
-        window.location.href = "login.html#login";
-        return;
-    }
-    const userDoc = await getDoc(doc(database, "users", user.uid));
-    const data = userDoc.data() ?? {};
-    ME = {
-        uid: user.uid,
-        name: data.name ?? user.email,
-        email: user.email,
-        school: data.school ?? ""
-    };
+    if (!user) { window.location.href = "login.html#login"; return; }
+
+    const ud = await getDoc(doc(database, "users", user.uid));
+    const d  = ud.data() ?? {};
+    ME = { uid: user.uid, name: d.name ?? user.email, email: user.email, school: d.school ?? "" };
 
     if (listingId) await loadListing();
 });
 
-// ── Load + render ────────────────────────────────────────
 async function loadListing() {
     try {
         const snap = await getDoc(doc(database, "listings", listingId));
-        if (!snap.exists()) {
-            showStatus("📭", "This listing no longer exists.");
-            return;
-        }
+        if (!snap.exists()) { showStatus("📭", "This listing no longer exists."); return; }
+
         listing = { id: snap.id, ...snap.data() };
         render();
 
         if (listing.sellerId !== ME.uid) {
             updateDoc(doc(database, "listings", listingId), { views: increment(1) })
-                .catch(err => console.warn("View increment failed:", err));
+                .catch(() => {});
         }
     } catch (err) {
-        console.error("Load listing failed:", err);
+        console.error(err);
         showStatus("⚠️", "Couldn't load this listing.");
     }
 }
@@ -85,9 +70,8 @@ async function render() {
         setMainImage(images[0]);
         thumbRow.innerHTML = images.map((src, i) => `
             <div class="thumb ${i === 0 ? "active" : ""}" data-i="${i}">
-                <img src="${escapeAttr(src)}" alt="">
-            </div>
-        `).join("");
+                <img src="${esc(src)}" alt="">
+            </div>`).join("");
         thumbRow.addEventListener("click", e => {
             const t = e.target.closest(".thumb");
             if (!t) return;
@@ -97,50 +81,46 @@ async function render() {
         });
     }
 
-    // Category + title + price
+    // Category / title / price
     if (listing.category) {
         categoryEl.textContent = CATEGORY_LABEL[listing.category] ?? listing.category;
         categoryEl.classList.add(`cat-${listing.category}`);
-    } else {
-        categoryEl.classList.add("hidden");
     }
-
     titleEl.textContent = listing.title ?? "Untitled";
-    priceEl.innerHTML = formatPrice(listing);
+    priceEl.innerHTML   = formatPrice(listing);
 
     // Meta row
-    const metaParts = [];
-    if (listing.condition) metaParts.push(`<span class="meta-item"><strong>Condition:</strong> ${escapeHtml(listing.condition)}</span>`);
-    if (listing.materialType) metaParts.push(`<span class="meta-item"><strong>Type:</strong> ${escapeHtml(listing.materialType)}</span>`);
-    if (listing.courseCode) metaParts.push(`<span class="meta-item"><strong>Course:</strong> ${escapeHtml(listing.courseCode)}</span>`);
-    if (listing.teacher) metaParts.push(`<span class="meta-item"><strong>Teacher:</strong> ${escapeHtml(listing.teacher)}</span>`);
-    metaParts.push(`<span class="meta-item"><i class="fa-regular fa-clock"></i> ${timeAgo(listing.postedAt)}</span>`);
-    if (typeof listing.views === "number") {
-        metaParts.push(`<span class="meta-item"><i class="fa-regular fa-eye"></i> ${listing.views} view${listing.views === 1 ? "" : "s"}</span>`);
-    }
-    metaEl.innerHTML = metaParts.join("");
+    const parts = [];
+    if (listing.condition)    parts.push(`<span class="meta-item"><strong>Condition:</strong> ${escHtml(listing.condition)}</span>`);
+    if (listing.materialType) parts.push(`<span class="meta-item"><strong>Type:</strong> ${escHtml(listing.materialType)}</span>`);
+    if (listing.courseCode)   parts.push(`<span class="meta-item"><strong>Course:</strong> ${escHtml(listing.courseCode)}</span>`);
+    if (listing.teacher)      parts.push(`<span class="meta-item"><strong>Teacher:</strong> ${escHtml(listing.teacher)}</span>`);
+    parts.push(`<span class="meta-item"><i class="fa-regular fa-clock"></i> ${timeAgo(listing.postedAt)}</span>`);
+    if (typeof listing.views === "number")
+        parts.push(`<span class="meta-item"><i class="fa-regular fa-eye"></i> ${listing.views} view${listing.views===1?"":"s"}</span>`);
+    metaEl.innerHTML = parts.join("");
 
     descriptionEl.textContent = listing.description ?? "";
 
     // Seller card
     const sName = listing.sellerName ?? "Unknown";
     sellerAvatar.textContent = (sName[0] ?? "?").toUpperCase();
-    sellerName.textContent = sName;
+    sellerName.textContent   = sName;
     sellerSchool.textContent = listing.sellerSchool || "";
     sellerSchool.classList.toggle("hidden", !listing.sellerSchool);
-
     if (listing.sellerEmail) {
-        sellerEmail.innerHTML = `<i class="fa-regular fa-envelope"></i> ${escapeHtml(listing.sellerEmail)}`;
+        sellerEmail.innerHTML = `<i class="fa-regular fa-envelope"></i> ${escHtml(listing.sellerEmail)}`;
         sellerEmail.href = `mailto:${listing.sellerEmail}`;
         sellerEmail.classList.remove("hidden");
     } else {
         sellerEmail.classList.add("hidden");
     }
 
-    // Actions
+    // ── Actions ──────────────────────────────────────────
     const isOwner = listing.sellerId === ME.uid;
 
     if (isOwner) {
+        // Owner: edit + delete only
         actionsEl.innerHTML = `
             <button class="action-btn primary" id="edit-btn">
                 <i class="fa-regular fa-pen-to-square"></i>&nbsp; Edit
@@ -151,100 +131,54 @@ async function render() {
             window.location.href = `sell.html?edit=${listingId}`;
         });
         document.getElementById("delete-btn").addEventListener("click", handleDelete);
+
     } else {
-        // Check current favourite state before rendering buttons
-        const favRef = doc(database, "users", ME.uid, "favourites", listingId);
+        // Buyer: Save + Message Seller — that's it.
+        // All buying happens inside the chat conversation.
+        const favRef  = doc(database, "users", ME.uid, "favourites", listingId);
         const favSnap = await getDoc(favRef);
-        isFaved = favSnap.exists();
+        isFaved       = favSnap.exists();
+
+        const isSoldToSomeoneElse = ["sold","rented"].includes(listing.status) ||
+            (listing.status === "escrow" && listing.buyerId !== ME.uid);
 
         actionsEl.innerHTML = `
             <button class="action-btn ${isFaved ? "faved" : ""}" id="fav-btn">
                 <i class="fa-${isFaved ? "solid" : "regular"} fa-heart"></i>
                 <span id="fav-label">${isFaved ? "Saved" : "Save"}</span>
             </button>
-            <button class="action-btn primary" id="msg-btn">
-                <i class="fa-regular fa-comment"></i>&nbsp; Message Seller to Buy
-            </button>
+            ${isSoldToSomeoneElse
+                ? `<button class="action-btn secondary" disabled>🔒 No longer available</button>`
+                : `<button class="action-btn primary" id="msg-btn">
+                       <i class="fa-regular fa-comment"></i>&nbsp; Message Seller
+                   </button>`
+            }
         `;
-        // Buy happens inside the chat — message first, then offer to buy
-        document.getElementById("msg-btn").addEventListener("click", () =>
-            handleMessageSeller(`Hi! I'm interested in buying "${listing.title}" for $${listing.price?.toFixed(2) ?? "?"}. Is it still available?`)
-        );
+
         document.getElementById("fav-btn").addEventListener("click", handleToggleFavourite);
+        document.getElementById("msg-btn")?.addEventListener("click", openChat);
     }
 }
 
 function setMainImage(src) {
-    mainImageWrap.innerHTML = `<img src="${escapeAttr(src)}" alt=""
+    mainImageWrap.innerHTML = `<img src="${esc(src)}" alt=""
         onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',innerHTML:'<i class=\\'fa-regular fa-image\\'></i>'}))">`;
 }
 
-// ── Favourite toggle ──────────────────────────────────────
-async function handleToggleFavourite() {
-    const btn = document.getElementById("fav-btn");
-    const icon = btn.querySelector("i");
-    const label = document.getElementById("fav-label");
-    const favRef = doc(database, "users", ME.uid, "favourites", listingId);
-
-    btn.disabled = true;
-
-    try {
-        if (isFaved) {
-            await deleteDoc(favRef);
-            isFaved = false;
-            icon.className = "fa-regular fa-heart";
-            label.textContent = "Save";
-            btn.classList.remove("faved");
-        } else {
-            // Save a snapshot of the key fields profile.js expects
-            await setDoc(favRef, {
-                listingId: listingId,
-                title: listing.title ?? "",
-                price: listing.price ?? null,
-                image: listing.images?.[0] ?? null,
-                category: listing.category ?? null,
-                sellerName: listing.sellerName ?? ""
-            });
-            isFaved = true;
-            icon.className = "fa-solid fa-heart";
-            label.textContent = "Saved";
-            btn.classList.add("faved");
-        }
-    } catch (err) {
-        console.error("Favourite toggle failed:", err);
-    } finally {
-        btn.disabled = false;
-    }
-}
-
-// ── Delete listing ────────────────────────────────────────
-async function handleDelete() {
-    if (!confirm(`Delete "${listing.title}"? This cannot be undone.`)) return;
-    const btn = document.getElementById("delete-btn");
-    btn.disabled = true;
-    btn.textContent = "Deleting...";
-    try {
-        await deleteDoc(doc(database, "listings", listingId));
-        window.location.href = "home.html";
-    } catch (err) {
-        console.error("Delete failed:", err);
-        alert("Couldn't delete the listing. " + (err.message ?? ""));
-        btn.disabled = false;
-        btn.textContent = "Delete Listing";
-    }
-}
-
-// ── Message seller ────────────────────────────────────────
-async function handleMessageSeller(prefillMsg = "") {
+// ── Open chat with listing context ────────────────────────
+// The listing banner + buy button live inside the chat.
+// No status changes happen here — just open the conversation.
+async function openChat() {
     const btn = document.getElementById("msg-btn");
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = "Opening chat...";
+
     try {
-        const otherUid = listing.sellerId;
+        const otherUid  = listing.sellerId;
         const otherName = listing.sellerName ?? "Seller";
 
         const snapshot = await getDocs(collection(database, "conversations"));
-        const existing = snapshot.docs.find(d => {
+        const existing  = snapshot.docs.find(d => {
             const p = d.data().participants ?? [];
             return p.includes(ME.uid) && p.includes(otherUid);
         });
@@ -255,25 +189,68 @@ async function handleMessageSeller(prefillMsg = "") {
         } else {
             const ref = await addDoc(collection(database, "conversations"), {
                 participants: [ME.uid, otherUid],
-                names: { [ME.uid]: ME.name, [otherUid]: otherName },
-                lastMessage: "",
-                listingRef: { id: listingId, title: listing.title, price: listing.price }
+                names:        { [ME.uid]: ME.name, [otherUid]: otherName },
+                lastMessage:  "",
+                listingRef:   {
+                    id:    listingId,
+                    title: listing.title,
+                    price: listing.price,
+                    image: listing.images?.[0] ?? null
+                },
             });
             convId = ref.id;
         }
 
-        // Pass the prefill message + listing context to chat
-        const query = new URLSearchParams({
-            conv: convId,
-            ...(prefillMsg ? { prefill: prefillMsg } : {}),
-            listing: listingId
-        });
-        window.location.href = `chat.html?${query}`;
+        window.location.href = `chat.html?conv=${convId}&listing=${listingId}`;
+
     } catch (err) {
-        console.error("Open chat failed:", err);
-        alert("Couldn't open chat. " + (err.message ?? ""));
+        console.error(err);
+        alert("Couldn't open chat: " + (err.message ?? ""));
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-regular fa-comment"></i>&nbsp; Message Seller to Buy`;
+        btn.innerHTML = `<i class="fa-regular fa-comment"></i>&nbsp; Message Seller`;
+    }
+}
+
+// ── Favourite toggle ──────────────────────────────────────
+async function handleToggleFavourite() {
+    const btn   = document.getElementById("fav-btn");
+    const icon  = btn.querySelector("i");
+    const label = document.getElementById("fav-label");
+    const favRef = doc(database, "users", ME.uid, "favourites", listingId);
+    btn.disabled = true;
+    try {
+        if (isFaved) {
+            await deleteDoc(favRef);
+            isFaved = false;
+            icon.className    = "fa-regular fa-heart";
+            label.textContent = "Save";
+            btn.classList.remove("faved");
+        } else {
+            await setDoc(favRef, {
+                listingId, title: listing.title ?? "", price: listing.price ?? null,
+                image: listing.images?.[0] ?? null, category: listing.category ?? null,
+                sellerName: listing.sellerName ?? ""
+            });
+            isFaved = true;
+            icon.className    = "fa-solid fa-heart";
+            label.textContent = "Saved";
+            btn.classList.add("faved");
+        }
+    } catch (err) { console.error(err); }
+    finally { btn.disabled = false; }
+}
+
+// ── Delete ────────────────────────────────────────────────
+async function handleDelete() {
+    if (!confirm(`Delete "${listing.title}"? This cannot be undone.`)) return;
+    const btn = document.getElementById("delete-btn");
+    btn.disabled = true; btn.textContent = "Deleting...";
+    try {
+        await deleteDoc(doc(database, "listings", listingId));
+        window.location.href = "home.html";
+    } catch (err) {
+        alert("Couldn't delete: " + (err.message ?? ""));
+        btn.disabled = false; btn.textContent = "Delete";
     }
 }
 
@@ -281,37 +258,27 @@ async function handleMessageSeller(prefillMsg = "") {
 function showStatus(emoji, msg) {
     statusScreen.classList.remove("hidden");
     detailMain.classList.add("hidden");
-    statusScreen.innerHTML = `
-        <div class="emoji">${emoji}</div>
-        <div class="msg">${escapeHtml(msg)}</div>
-    `;
+    statusScreen.innerHTML = `<div class="emoji">${emoji}</div><div class="msg">${escHtml(msg)}</div>`;
 }
 
 function formatPrice(item) {
     if (item.category === "exchange") return `<span>Exchange</span>`;
-    const price = typeof item.price === "number" ? `$${item.price.toFixed(2)}` : "—";
-    if (item.category === "rent") {
-        const unit = item.rentDuration ?? "week";
-        return `${price}<span class="unit"> / ${unit}</span>`;
-    }
-    return price;
+    const p = typeof item.price === "number" ? `$${item.price.toFixed(2)}` : "—";
+    return item.category === "rent" ? `${p}<span class="unit"> / ${item.rentDuration ?? "week"}</span>` : p;
 }
 
 function timeAgo(ts) {
     if (!ts?.toDate) return "";
-    const date = ts.toDate();
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 60) return "just now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-    return date.toLocaleDateString();
+    const s = Math.floor((Date.now() - ts.toDate().getTime()) / 1000);
+    if (s < 60)     return "just now";
+    if (s < 3600)   return `${Math.floor(s/60)}m ago`;
+    if (s < 86400)  return `${Math.floor(s/3600)}h ago`;
+    if (s < 604800) return `${Math.floor(s/86400)}d ago`;
+    return ts.toDate().toLocaleDateString();
 }
 
-function escapeHtml(s) {
+function escHtml(s) {
     return String(s).replace(/[&<>"']/g, c =>
-        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
-    );
+        ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-
-function escapeAttr(s) { return escapeHtml(s); }
+function esc(s) { return escHtml(s); }
