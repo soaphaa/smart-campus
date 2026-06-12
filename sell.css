@@ -24,6 +24,7 @@ body {
     color: var(--primary-color);
     text-decoration: none;
     font-size: 1rem;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -37,7 +38,7 @@ body {
 }
 
 #sell-topbar h1 {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin: 0;
 }
@@ -59,14 +60,14 @@ body {
 }
 
 .field label.field-label {
-    font-size: 0.85rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--text-main);
     letter-spacing: 0.01em;
 }
 
 .field .hint {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-prompt);
 }
 
@@ -79,7 +80,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     background: #fff;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text-main);
     font-family: inherit;
     outline: none;
@@ -121,7 +122,7 @@ body {
     background: #fff;
     color: var(--text-main);
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     transition: all 0.15s ease;
     text-align: center;
 }
@@ -199,13 +200,13 @@ body {
 }
 
 .toggle-field .toggle-title {
-    font-size: 0.95rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-main);
 }
 
 .toggle-field .toggle-sub {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
     color: var(--text-prompt);
 }
 
@@ -252,7 +253,7 @@ body {
 
 #course-fields {
     padding-left: 1rem;
-    border-left: 3px solid var(--border-color);
+    border-left: 2px solid var(--border-color);
     margin-left: 0.5rem;
     display: flex;
     flex-direction: column;
@@ -261,7 +262,7 @@ body {
 
 /* ── Image uploader ──────────────────────────────────────── */
 #image-drop {
-    border: 2px dashed var(--border-color);
+    border: 5px dashed var(--border-color);
     border-radius: var(--border-radius);
     padding: 2rem 1rem;
     text-align: center;
@@ -283,12 +284,12 @@ body {
 }
 
 #image-drop .upload-text {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 500;
 }
 
 #image-drop .upload-sub {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
     margin-top: 0.3rem;
 }
 
@@ -310,7 +311,7 @@ body {
 .preview-tile {
     position: relative;
     aspect-ratio: 1 / 1;
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     overflow: hidden;
     background: var(--background-color);
 }
