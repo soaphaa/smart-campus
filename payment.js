@@ -296,6 +296,21 @@ async function payWithWallet() {
         ts:         serverTimestamp(),
     });
 
+    // Write order to buyer's orders subcollection (shows in profile)
+    await addDoc(collection(database, "users", ME.uid, "orders"), {
+        listingId:   listingId,
+        title:       listing.title ?? "",
+        sellerName:  listing.sellerName ?? "",
+        sellerId:    listing.sellerId,
+        price:       listing.price,
+        image:       listing.images?.[0] ?? null,
+        category:    listing.category ?? "",
+        payMethod:   "wallet",
+        status:      "in_progress",
+        currentStep: 1,
+        createdAt:   serverTimestamp(),
+    });
+
     console.log(`✓ Wallet payment complete. $${price} held in escrow for "${listing.title}"`);
     goToConfirmation("wallet");
 }
@@ -342,6 +357,22 @@ async function payWithStripe() {
     });
 
     console.log(`✓ Stripe payment complete. Listing locked in escrow.`);
+
+    // Write order to buyer's orders subcollection
+    await addDoc(collection(database, "users", ME.uid, "orders"), {
+        listingId:   listingId,
+        title:       listing.title ?? "",
+        sellerName:  listing.sellerName ?? "",
+        sellerId:    listing.sellerId,
+        price:       listing.price,
+        image:       listing.images?.[0] ?? null,
+        category:    listing.category ?? "",
+        payMethod:   "stripe",
+        status:      "in_progress",
+        currentStep: 1,
+        createdAt:   serverTimestamp(),
+    });
+
     goToConfirmation("stripe");
 }
 
@@ -365,6 +396,22 @@ async function confirmCashOrETransfer(method) {
     });
 
     console.log(`✓ ${method} confirmed. Listing marked as pending.`);
+
+    // Write order to buyer's orders subcollection
+    await addDoc(collection(database, "users", ME.uid, "orders"), {
+        listingId:   listingId,
+        title:       listing.title ?? "",
+        sellerName:  listing.sellerName ?? "",
+        sellerId:    listing.sellerId,
+        price:       listing.price,
+        image:       listing.images?.[0] ?? null,
+        category:    listing.category ?? "",
+        payMethod:   method,
+        status:      "in_progress",
+        currentStep: 1,
+        createdAt:   serverTimestamp(),
+    });
+
     goToConfirmation(method);
 }
 

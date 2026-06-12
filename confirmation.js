@@ -1,75 +1,74 @@
 import { database, authentication } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 import {
-    doc, getDoc, runTransaction, updateDoc, serverTimestamp
+    doc, getDoc, updateDoc, runTransaction, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-// ── DOM ─────────────────────────────────────────────────────
-const statusScreen     = document.getElementById("status-screen");
-const confMain         = document.getElementById("conf-main");
-const orderImgWrap     = document.getElementById("order-img-wrap");
-const orderTitle       = document.getElementById("order-title");
-const orderMeta        = document.getElementById("order-meta");
-const orderAmount      = document.getElementById("order-amount");
-const qrSection        = document.getElementById("qr-section");
-const scannerSection   = document.getElementById("scanner-section");
-const manualSection    = document.getElementById("manual-section");
-const completedSection = document.getElementById("completed-section");
-const completedSub     = document.getElementById("completed-sub");
-const qrCanvas         = document.getElementById("qr-canvas");
-const qrTokenDisplay   = document.getElementById("qr-token-display");
-const qrCountdown      = document.getElementById("qr-countdown");
-const startScanBtn     = document.getElementById("start-scan-btn");
-const scanResult       = document.getElementById("scan-result");
-const primaryBtn       = document.getElementById("primary-action-btn");
-const dotMeetup        = document.getElementById("dot-meetup");
-const dotDone          = document.getElementById("dot-done");
-const line1            = document.getElementById("line-1");
-const line2            = document.getElementById("line-2");
+// ── DOM ───────────────────────────────────────────────────
+const loading        = document.getElementById("loading");
+const page           = document.getElementById("page");
+const orderImg       = document.getElementById("order-img");
+const orderTitle     = document.getElementById("order-title");
+const orderMeta      = document.getElementById("order-meta");
+const orderPrice     = document.getElementById("order-price");
+const dotMeetup      = document.getElementById("dot-meetup");
+const dotDone        = document.getElementById("dot-done");
+const line1          = document.getElementById("line-1");
+const line2          = document.getElementById("line-2");
+const codeCard       = document.getElementById("code-card");
+const codeDisplay    = document.getElementById("code-display");
+const copyBtn        = document.getElementById("copy-btn");
+const emailBtn       = document.getElementById("email-btn");
+const verifyCard     = document.getElementById("verify-card");
+const codeInput      = document.getElementById("code-input");
+const verifyBtn      = document.getElementById("verify-btn");
+const verifyResult   = document.getElementById("verify-result");
+const completedCard  = document.getElementById("completed-card");
+const completedTitle = document.getElementById("completed-title");
+const completedSub   = document.getElementById("completed-sub");
+const primaryBtn     = document.getElementById("primary-btn");
 
-// ── State ────────────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────
 let ME        = null;
 let listing   = null;
 let listingId = null;
 let payMethod = null;
-let scanner   = null;
-let qrTimer   = null;
+let myCode    = null;
 
-const params  = new URLSearchParams(window.location.search);
-listingId     = params.get("id");
-payMethod     = params.get("method");
+const params = new URLSearchParams(window.location.search);
+listingId    = params.get("id");
+payMethod    = params.get("method") ?? "wallet";
 
-// ── Auth ─────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────
 onAuthStateChanged(authentication, async user => {
     if (!user) { window.location.href = "login.html#login"; return; }
-
-    const userDoc = await getDoc(doc(database, "users", user.uid));
-    ME = { uid: user.uid, name: userDoc.data()?.name ?? user.email, email: user.email };
-
-    if (!listingId) { showStatus("⚠️", "No order found."); return; }
-    await loadAndRender();
+    const ud = await getDoc(doc(database, "users", user.uid));
+    ME = { uid: user.uid, name: ud.data()?.name ?? user.email, email: user.email };
+    if (!listingId) { showError("No order found."); return; }
+    await init();
 });
 
-// ── Load listing and decide what to show ─────────────────────
-async function loadAndRender() {
+// ── Init ──────────────────────────────────────────────────
+async function init() {
     try {
         const snap = await getDoc(doc(database, "listings", listingId));
-        if (!snap.exists()) { showStatus("📭", "This order no longer exists."); return; }
+        if (!snap.exists()) { showError("This order no longer exists."); return; }
         listing = { id: snap.id, ...snap.data() };
 
-        statusScreen.classList.add("hidden");
-        confMain.classList.remove("hidden");
+        // Show page
+        loading.style.display = "none";
+        page.style.display    = "block";
 
-        renderOrderCard();
+        // Order card
+        if (listing.images?.[0]) {
+            orderImg.innerHTML = `<img src="${listing.images[0]}" alt="">`;
+        }
+        orderTitle.textContent = listing.title ?? "Untitled";
+        orderMeta.textContent  = `Sold by ${listing.sellerName ?? "Unknown"}`;
+        orderPrice.textContent = listing.price ? `$${listing.price.toFixed(2)}` : "Exchange";
 
         const isBuyer  = listing.buyerId  === ME.uid;
         const isSeller = listing.sellerId === ME.uid;
-
-        console.log("Confirmation debug:", {
-            listingId, status: listing.status,
-            buyerId: listing.buyerId, sellerId: listing.sellerId,
-            myUid: ME.uid, isBuyer, isSeller, payMethod
-        });
 
         // Already completed
         if (listing.status === "sold" || listing.status === "rented") {
@@ -77,258 +76,192 @@ async function loadAndRender() {
             return;
         }
 
-        // Valid active states: escrow, pending (cash/etransfer), approved
-        const validStatuses = ["escrow", "pending", "approved", "requested"];
-        if (!validStatuses.includes(listing.status)) {
-            showStatus("⚠️", `Unexpected listing status: ${listing.status}. Please contact support.`);
-            return;
-        }
+        dotMeetup.classList.add("active");
 
         if (isBuyer) {
-            dotMeetup.classList.add("active");
-            if (payMethod === "wallet" || payMethod === "stripe") {
-                qrSection.classList.remove("hidden");
-                generateQR();
-            } else {
-                manualSection.classList.remove("hidden");
-                document.getElementById("manual-instructions").textContent =
-                    payMethod === "cash"
-                        ? "Bring exact cash to the meetup. The seller will confirm receipt in the app after you hand over the payment."
-                        : "Make sure your e-Transfer has been sent. The seller will confirm once they receive it.";
-            }
+            // Generate or retrieve the code — stored on the listing so seller can verify
+            myCode = await getOrCreateCode();
+            codeDisplay.textContent = myCode;
+            codeCard.classList.remove("hidden");
         } else if (isSeller) {
-            dotMeetup.classList.add("active");
-            scannerSection.classList.remove("hidden");
-            setupScanner();
+            verifyCard.classList.remove("hidden");
+            setupVerifyBtn();
         } else {
-            // Neither buyer nor seller — show helpful debug info
-            console.error("Not part of transaction. listing.buyerId:", listing.buyerId, "ME.uid:", ME.uid);
-            showStatus("🚫", "You\'re not part of this transaction.");
+            showError("You're not part of this transaction.");
         }
 
     } catch (err) {
-        console.error("Load failed:", err);
-        showStatus("⚠️", "Couldn't load this order.");
+        console.error(err);
+        showError("Couldn't load this order. " + err.message);
     }
 }
 
-// ── Order card ───────────────────────────────────────────────
-function renderOrderCard() {
-    if (listing.images?.[0]) {
-        orderImgWrap.innerHTML = `<img src="${listing.images[0]}" alt="">`;
-    }
-    orderTitle.textContent  = listing.title ?? "Untitled";
-    orderMeta.textContent   = `Seller: ${listing.sellerName ?? "Unknown"} · ${capitalize(listing.category ?? "")}`;
-    orderAmount.textContent = listing.price ? `$${listing.price.toFixed(2)}` : "Exchange";
+// ── Handover code ─────────────────────────────────────────
+// Stored on the listing doc so seller can verify it server-side
+async function getOrCreateCode() {
+    // If code already exists on the listing, reuse it
+    if (listing.handoverCode) return listing.handoverCode;
+
+    // Generate a new 10-char alphanumeric code
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I confusion
+    let code = "";
+    for (let i = 0; i < 10; i++) code += chars[Math.floor(Math.random() * chars.length)];
+
+    // Save to Firestore so seller can verify
+    await updateDoc(doc(database, "listings", listingId), { handoverCode: code });
+    listing.handoverCode = code;
+    return code;
 }
 
-// ── QR code generation ───────────────────────────────────────
-// The token is: listingId + buyerUID + a 5-min window timestamp
-// This makes it time-limited so it can't be reused or screenshotted later
-function generateQR() {
-    qrCanvas.innerHTML = "";
-    clearInterval(qrTimer);
-
-    const windowMins = 5;
-    const timeSlot   = Math.floor(Date.now() / (windowMins * 60 * 1000));
-    const token      = `SC:${listingId}:${ME.uid}:${timeSlot}`;
-
-    console.log(`QR token generated: ${token}`);
-
-    new QRCode(qrCanvas, {
-        text:         token,
-        width:        200,
-        height:       200,
-        colorDark:    "#0f172a",
-        colorLight:   "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H,
-    });
-
-    // Show a truncated version of the token so it looks legit
-    qrTokenDisplay.textContent = token.slice(0, 32) + "...";
-
-    // Countdown timer — regenerates QR every 5 minutes
-    let secsLeft = windowMins * 60 - (Math.floor(Date.now() / 1000) % (windowMins * 60));
-
-    qrTimer = setInterval(() => {
-        secsLeft--;
-        const m = String(Math.floor(secsLeft / 60)).padStart(2, "0");
-        const s = String(secsLeft % 60).padStart(2, "0");
-        qrCountdown.textContent = `${m}:${s}`;
-
-        if (secsLeft <= 0) {
-            generateQR(); // regenerate when expired
+// ── Copy button ───────────────────────────────────────────
+function setupCopyBtn() {
+    copyBtn.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(myCode);
+            copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+            setTimeout(() => { copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy Code`; }, 2000);
+        } catch {
+            // fallback
+            const el = document.createElement("textarea");
+            el.value = myCode;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand("copy");
+            document.body.removeChild(el);
+            copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+            setTimeout(() => { copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy Code`; }, 2000);
         }
-    }, 1000);
-}
-
-// ── QR scanner setup (seller side) ──────────────────────────
-function setupScanner() {
-    startScanBtn.addEventListener("click", startScanner);
-}
-
-function startScanner() {
-    startScanBtn.style.display = "none";
-
-    scanner = new Html5Qrcode("reader");
-
-    scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess,
-        err => {} // ignore frame errors
-    ).catch(err => {
-        console.error("Camera failed:", err);
-        showScanResult("error", "Camera access denied. Check browser permissions.");
-        startScanBtn.style.display = "flex";
     });
 }
 
-async function onScanSuccess(decodedText) {
-    // Stop scanning immediately
-    if (scanner) {
-        await scanner.stop();
-        scanner = null;
-    }
-
-    console.log(`QR scanned: ${decodedText}`);
-
-    // Validate token format: SC:<listingId>:<buyerUID>:<timeSlot>
-    const parts = decodedText.split(":");
-    if (parts.length !== 4 || parts[0] !== "SC") {
-        showScanResult("error", "Invalid QR code. Make sure the buyer is showing their confirmation screen.");
-        return;
-    }
-
-    const [, scannedListingId, scannedBuyerUid, scannedTimeSlot] = parts;
-
-    // Check it matches this transaction
-    if (scannedListingId !== listingId) {
-        showScanResult("error", "QR code is for a different listing.");
-        return;
-    }
-
-    if (scannedBuyerUid !== listing.buyerId) {
-        showScanResult("error", "QR code belongs to a different buyer.");
-        return;
-    }
-
-    // Check time window (must be within the last 5-min slot or current)
-    const windowMins   = 5;
-    const currentSlot  = Math.floor(Date.now() / (windowMins * 60 * 1000));
-    const tokenSlot    = parseInt(scannedTimeSlot);
-    if (Math.abs(currentSlot - tokenSlot) > 1) {
-        showScanResult("error", "QR code has expired. Ask the buyer to refresh their screen.");
-        return;
-    }
-
-    // ✓ Valid — release escrow atomically
-    showScanResult("success", "✓ QR verified! Releasing funds...");
-    await releaseEscrow();
+// ── Email button ──────────────────────────────────────────
+function setupEmailBtn() {
+    emailBtn.addEventListener("click", () => {
+        const subject = encodeURIComponent(`Smart Campus Order — ${listing.title}`);
+        const body    = encodeURIComponent(
+            `Hi ${ME.name},\n\nYour order is confirmed!\n\n` +
+            `Item: ${listing.title}\n` +
+            `Price: ${listing.price ? "$" + listing.price.toFixed(2) : "Exchange"}\n` +
+            `Seller: ${listing.sellerName ?? "Unknown"}\n\n` +
+            `Your handover code: ${myCode}\n\n` +
+            `Show this code to the seller at the meetup to complete the transaction.\n\n` +
+            `Smart Campus`
+        );
+        window.location.href = `mailto:${ME.email}?subject=${subject}&body=${body}`;
+    });
 }
 
-// ── Atomic escrow release ────────────────────────────────────
-// This is the critical transaction — both the listing status update
-// AND the seller balance credit happen together.
-// If either fails, both roll back — money never disappears.
+// ── Verify button (seller) ────────────────────────────────
+function setupVerifyBtn() {
+    // Allow Enter key
+    codeInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") verifyBtn.click();
+    });
+    // Auto uppercase
+    codeInput.addEventListener("input", () => {
+        codeInput.value = codeInput.value.toUpperCase();
+    });
+
+    verifyBtn.addEventListener("click", async () => {
+        const entered = codeInput.value.trim().toUpperCase();
+        if (entered.length < 10) {
+            showVerifyResult("error", "Please enter the full 10-character code.");
+            return;
+        }
+
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = "Verifying…";
+
+        // Fetch fresh listing to get the stored code
+        const freshSnap = await getDoc(doc(database, "listings", listingId));
+        const stored    = freshSnap.data()?.handoverCode ?? "";
+
+        if (entered !== stored) {
+            showVerifyResult("error", "Incorrect code. Ask the buyer to double-check their confirmation screen.");
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Confirm & Release`;
+            return;
+        }
+
+        showVerifyResult("success", "✓ Code matched! Releasing funds to your wallet…");
+        await releaseEscrow();
+    });
+}
+
+// ── Atomic escrow release ─────────────────────────────────
+// Both listing → sold AND seller wallet credit happen together.
+// If either fails → both roll back → money stays safe in escrow.
 async function releaseEscrow() {
     try {
         await runTransaction(database, async tx => {
             const listingRef = doc(database, "listings", listingId);
             const sellerRef  = doc(database, "users", listing.sellerId);
 
-            const listingSnap = await tx.get(listingRef);
-            const sellerSnap  = await tx.get(sellerRef);
+            const [listingSnap, sellerSnap] = await Promise.all([
+                tx.get(listingRef),
+                tx.get(sellerRef),
+            ]);
 
             if (!listingSnap.exists()) throw new Error("Listing not found.");
+            if (["sold","rented"].includes(listingSnap.data().status)) throw new Error("Already completed.");
 
-            const currentStatus = listingSnap.data().status;
-            if (currentStatus === "sold" || currentStatus === "rented") {
-                throw new Error("Already completed.");
-            }
+            const escrowAmt     = listingSnap.data().escrowAmt ?? listing.price ?? 0;
+            const sellerBalance = sellerSnap.data()?.walletBalance ?? 0;
+            const newStatus     = listing.category === "rent" ? "rented" : "sold";
 
-            const escrowAmt      = listingSnap.data().escrowAmt ?? 0;
-            const sellerBalance  = sellerSnap.data()?.walletBalance ?? 0;
-            const newStatus      = listing.category === "rent" ? "rented" : "sold";
-
-            // 1. Mark listing as sold/rented
-            tx.update(listingRef, {
-                status:      newStatus,
-                completedAt: serverTimestamp(),
-            });
-
-            // 2. Credit seller's wallet
-            tx.update(sellerRef, {
-                walletBalance: sellerBalance + escrowAmt,
-            });
+            tx.update(listingRef, { status: newStatus, completedAt: serverTimestamp() });
+            tx.update(sellerRef,  { walletBalance: sellerBalance + escrowAmt });
         });
 
-        console.log(`✓ Escrow released. Listing marked as ${listing.category === "rent" ? "rented" : "sold"}.`);
-
-        // Update step indicator
-        dotMeetup.classList.remove("active");
-        dotMeetup.classList.add("done");
-        dotMeetup.innerHTML = `<i class="fa-solid fa-check"></i>`;
-        line1.classList.add("done");
-        dotDone.classList.add("done");
-        dotDone.innerHTML = `<i class="fa-solid fa-check"></i>`;
-        line2.classList.add("done");
-
-        scanResult.textContent  = "✓ Funds released to your wallet!";
-        scanResult.className    = "scan-result success";
-        scanResult.classList.remove("hidden");
-
-        setTimeout(() => showCompleted(true), 1500);
+        showCompleted(true);
 
     } catch (err) {
         console.error("Escrow release failed:", err);
-        // IMPORTANT: if this fails, money stays in escrow — nobody loses anything.
-        // The seller can try scanning again or contact support.
-        showScanResult("error", `Release failed: ${err.message}. Your money is safe in escrow — try again or contact support.`);
-
-        // Re-enable scanner
-        startScanBtn.style.display = "flex";
-        startScanBtn.textContent   = "Try Again";
-        startScanBtn.onclick       = startScanner;
+        showVerifyResult("error", `Failed: ${err.message} — Money is safe in escrow. Try again or contact support.`);
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Try Again`;
     }
 }
 
-// ── Completed state ──────────────────────────────────────────
+// ── Completed ─────────────────────────────────────────────
 function showCompleted(isSeller) {
-    qrSection.classList.add("hidden");
-    scannerSection.classList.add("hidden");
-    manualSection.classList.add("hidden");
-    completedSection.classList.remove("hidden");
+    codeCard.classList.add("hidden");
+    verifyCard.classList.add("hidden");
+    completedCard.classList.remove("hidden");
 
-    dotMeetup.classList.add("done");
+    dotMeetup.className = "step-dot done";
     dotMeetup.innerHTML = `<i class="fa-solid fa-check"></i>`;
-    dotDone.classList.add("done");
-    dotDone.innerHTML = `<i class="fa-solid fa-check"></i>`;
+    dotDone.className   = "step-dot done";
+    dotDone.innerHTML   = `<i class="fa-solid fa-check"></i>`;
     line1.classList.add("done");
     line2.classList.add("done");
 
-    completedSub.textContent = isSeller
-        ? `$${(listing.escrowAmt ?? listing.price ?? 0).toFixed(2)} has been added to your wallet. You can withdraw it from your profile.`
-        : `You're all set! Enjoy your ${listing.title}.`;
+    const amount = (listing.escrowAmt ?? listing.price ?? 0).toFixed(2);
 
     if (isSeller) {
+        completedTitle.textContent = "Payment Received!";
+        completedSub.textContent   = `$${amount} has been added to your wallet. Nice work!`;
         primaryBtn.classList.remove("hidden");
         primaryBtn.textContent = "View Wallet";
-        primaryBtn.onclick     = () => window.location.href = "profile.html#wallet";
+        primaryBtn.onclick     = () => window.location.href = "profile.html";
+    } else {
+        completedTitle.textContent = "You're all set! 🎉";
+        completedSub.textContent   = `Enjoy your ${listing.title}. Your $${amount} payment has been released to the seller.`;
+        if (typeof confetti === "function") {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
+            setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { y: 0.4 }, angle: 60 }), 400);
+            setTimeout(() => confetti({ particleCount: 80, spread: 60, origin: { y: 0.4 }, angle: 120 }), 700);
+        }
     }
 }
 
-// ── Helpers ──────────────────────────────────────────────────
-function showStatus(emoji, msg) {
-    confMain.classList.add("hidden");
-    statusScreen.classList.remove("hidden");
-    statusScreen.innerHTML = `<div class="status-emoji">${emoji}</div><div class="status-msg">${msg}</div>`;
+// ── Helpers ───────────────────────────────────────────────
+function showError(msg) {
+    loading.innerHTML = `<div style="font-size:2rem">⚠️</div><div style="color:var(--text-main);font-weight:500;margin-top:0.5rem;">${msg}</div>`;
 }
 
-function showScanResult(type, msg) {
-    scanResult.textContent = msg;
-    scanResult.className   = `scan-result ${type}`;
-    scanResult.classList.remove("hidden");
+function showVerifyResult(type, msg) {
+    verifyResult.textContent  = msg;
+    verifyResult.className    = `${type}`;
+    verifyResult.style.display = "block";
 }
-
-function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }

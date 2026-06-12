@@ -145,7 +145,25 @@ function renderBanner(listing, lId) {
     txnActionArea.innerHTML = "";
 
     if (isSeller) {
-        if (status === "approved") {
+        if (status === "escrow" || status === "pending") {
+            // Buyer has paid — seller needs to scan QR at meetup
+            const span = document.createElement("span");
+            span.id = "txn-status-label";
+            span.className = "approved";
+            span.innerHTML = `<i class="fa-solid fa-circle-check"></i> Payment received`;
+            const btn = document.createElement("button");
+            btn.id = "confirm-sale-btn";
+            btn.innerHTML = `<i class="fa-solid fa-qrcode"></i> Scan QR at Meetup`;
+            btn.onclick = () => { window.location.href = `confirmation.html?id=${lId}&method=${listing.payMethod ?? "wallet"}`; };
+            txnActionArea.appendChild(span);
+            txnActionArea.appendChild(btn);
+        } else if (status === "sold" || status === "rented") {
+            const span = document.createElement("span");
+            span.id = "txn-status-label";
+            span.className = "approved";
+            span.innerHTML = `<i class="fa-solid fa-circle-check"></i> Sale complete`;
+            txnActionArea.appendChild(span);
+        } else if (status === "approved") {
             const span = document.createElement("span");
             span.id = "txn-status-label";
             span.className = "approved";
@@ -167,12 +185,17 @@ function renderBanner(listing, lId) {
     } else {
         const btn = document.createElement("button");
         btn.id = "buy-btn";
-        if (status === "approved" && isBuyer) {
+
+        if ((status === "escrow" || status === "sold" || status === "rented" || status === "pending") && isBuyer) {
+            // Already paid — give access to QR / confirmation page
+            btn.textContent = "View Confirmation Code";
+            btn.classList.add("enabled");
+            btn.onclick = () => { window.location.href = `confirmation.html?id=${lId}&method=${listing.payMethod ?? "wallet"}`; };
+        } else if (status === "approved" && isBuyer) {
             btn.textContent = "Buy Now";
             btn.classList.add("enabled");
             btn.onclick = () => { window.location.href = `payment.html?id=${lId}`; };
         } else {
-            // ALWAYS disabled — buyer just chats, seller confirms, then it unlocks
             btn.textContent = "Buy";
             btn.disabled = true;
         }
