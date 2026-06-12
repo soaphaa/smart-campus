@@ -80,7 +80,7 @@ body {
 }
 
 .auth-card h1 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--text-main);
     margin: 0;
@@ -89,7 +89,7 @@ body {
 
 .auth-card > p {
     margin: -0.75rem 0 0;
-    font-size: 0.9rem;
+    font-size: 1.3rem;
     color: var(--text-prompt);
     line-height: 1.5;
 }
@@ -111,7 +111,7 @@ body {
     padding: 0.9rem 1rem 0.9rem 1rem;
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-family: inherit;
     color: var(--text-main);
     background: #fff;
@@ -141,7 +141,7 @@ body {
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     color: var(--text-prompt);
     pointer-events: none;
     transition: all 0.18s ease;
@@ -173,7 +173,7 @@ body {
     background: none;
     border: none;
     color: var(--text-prompt);
-    font-size: 0.95rem;
+    font-size: 1rem;
     padding: 0.2rem;
     cursor: pointer;
     width: auto;
@@ -210,7 +210,7 @@ input[type="password"]::-ms-clear { display: none; visibility: hidden; }
 
 .school-option {
     padding: 0.65rem 1rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
     cursor: pointer;
     color: var(--text-main);
     transition: background 0.1s ease;
@@ -233,7 +233,7 @@ input[type="password"]::-ms-clear { display: none; visibility: hidden; }
     border-radius: 0.75rem;
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
     color: #fff;
-    font-size: 0.95rem;
+    font-size: 1.2rem;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -285,7 +285,7 @@ input[type="password"]::-ms-clear { display: none; visibility: hidden; }
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0.35rem;
-    font-size: 0.88rem;
+    font-size: 1rem;
     color: var(--text-prompt);
 }
 
@@ -295,7 +295,7 @@ input[type="password"]::-ms-clear { display: none; visibility: hidden; }
     border: none;
     padding: 0;
     font: inherit;
-    font-size: inherit;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--primary-color);
     cursor: pointer;
