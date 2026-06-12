@@ -22,13 +22,27 @@ body {
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
+
 @keyframes pulse-ring {
     0%   { transform: scale(1);   opacity: 0.6; }
     100% { transform: scale(1.8); opacity: 0; }
@@ -103,6 +117,7 @@ body {
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--teal); position: relative; flex-shrink: 0;
 }
+
 .live-dot::after {
     content: ''; position: absolute; inset: 0; border-radius: 50%;
     background: var(--teal); animation: pulse-ring 1.5s ease-out infinite;
@@ -124,7 +139,12 @@ body {
     max-width: 420px; margin: 0 auto 1.8rem;
 }
 
-.hero-cta { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.hero-cta {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
 
 .btn-hero {
     background: var(--primary); color: white; border: none;
