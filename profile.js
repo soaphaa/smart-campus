@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────
-   profile.js  —  Commercium profile page
+   profile.js  — Profile page
    Firebase Auth + Firestore + Storage
    ───────────────────────────────────────────────────────── */
 

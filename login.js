@@ -101,7 +101,7 @@ signUpForm.addEventListener("submit", async e => {
             name, email, school,
             dateCreated: new Date().toISOString()
         });
-        showToast("Account created! Welcome to Commercium 🎉");
+        showToast("Account created! Welcome to Smart Campus 🎉");
         setTimeout(() => window.location.href = "home.html", 1000);
     } catch (err) {
         setLoading(signUpBtn, false, "Sign Up");
