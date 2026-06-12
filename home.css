@@ -588,9 +588,9 @@ input {
     position: absolute;
     top: 0.6rem;
     left: 0.6rem;
-    padding: 0.25rem 1rem;
+    padding: 0.25rem 1.2rem;
     border-radius: 999px;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #fff;
     text-transform: uppercase;

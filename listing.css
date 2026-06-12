@@ -22,7 +22,8 @@ body {
 .back-link {
     color: var(--primary-color);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -200,20 +201,20 @@ body {
     background: #fff;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 1.5rem;
 }
 
 .seller-avatar {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 4rem;
+    height: 4rem;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
     color: #fff;
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -231,11 +232,11 @@ body {
 .seller-name {
     font-weight: 600;
     color: var(--text-main);
-    font-size: 1rem;
+    font-size: 1.15rem;
 }
 
 .seller-school {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-prompt);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -243,7 +244,7 @@ body {
 }
 
 .seller-email {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--primary-color);
     text-decoration: none;
     overflow: hidden;
