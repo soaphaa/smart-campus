@@ -253,7 +253,7 @@ body {
 
 #course-fields {
     padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
+    border-left: 1.5px solid var(--border-color);
     margin-left: 0.5rem;
     display: flex;
     flex-direction: column;
