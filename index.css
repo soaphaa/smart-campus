@@ -7,7 +7,7 @@
     --ink-soft:  #64748b;
     --ink-mute:  #94a3b8;
     --border:    #e2e8f0;
-    --bg:        #f8fafc;
+    --bg:        #EFF6FF;
     --white:     #ffffff;
     --radius:    1.25rem;
     --shadow:    0 4px 24px rgba(77,108,190,0.08);
@@ -16,33 +16,21 @@
 
 body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
+    background-color: #EFF6FF;
+    background-image: radial-gradient(circle, #bdd7f5 1px, transparent 1px);
+    background-size: 24px 24px;
     color: var(--ink);
     overflow-x: hidden;
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(28px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
-
 @keyframes pulse-ring {
     0%   { transform: scale(1);   opacity: 0.6; }
     100% { transform: scale(1.8); opacity: 0; }
@@ -59,7 +47,7 @@ body {
     position: sticky; top: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0.9rem 1.5rem;
-    background: rgba(248,250,252,0.9);
+    background: rgba(239,246,255,0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
@@ -117,7 +105,6 @@ body {
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--teal); position: relative; flex-shrink: 0;
 }
-
 .live-dot::after {
     content: ''; position: absolute; inset: 0; border-radius: 50%;
     background: var(--teal); animation: pulse-ring 1.5s ease-out infinite;
@@ -139,12 +126,7 @@ body {
     max-width: 420px; margin: 0 auto 1.8rem;
 }
 
-.hero-cta {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.hero-cta { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 
 .btn-hero {
     background: var(--primary); color: white; border: none;

@@ -183,20 +183,24 @@ async function openChat() {
             return p.includes(ME.uid) && p.includes(otherUid);
         });
 
+        const listingRefData = {
+            id:    listingId,
+            title: listing.title,
+            price: listing.price,
+            image: listing.images?.[0] ?? null
+        };
+
         let convId;
         if (existing) {
             convId = existing.id;
+            // Always update listingRef so the chat banner reflects the current listing
+            await updateDoc(doc(database, "conversations", convId), { listingRef: listingRefData });
         } else {
             const ref = await addDoc(collection(database, "conversations"), {
                 participants: [ME.uid, otherUid],
                 names:        { [ME.uid]: ME.name, [otherUid]: otherName },
                 lastMessage:  "",
-                listingRef:   {
-                    id:    listingId,
-                    title: listing.title,
-                    price: listing.price,
-                    image: listing.images?.[0] ?? null
-                },
+                listingRef:   listingRefData,
             });
             convId = ref.id;
         }
