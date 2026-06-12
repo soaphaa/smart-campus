@@ -7,7 +7,7 @@
     --ink-soft:  #64748b;
     --ink-mute:  #94a3b8;
     --border:    #e2e8f0;
-    --bg:        #f8fafc;
+    --bg:        #EFF6FF;
     --white:     #ffffff;
     --radius:    1.25rem;
     --shadow:    0 4px 24px rgba(77,108,190,0.08);
@@ -16,33 +16,21 @@
 
 body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
+    background-color: #EFF6FF;
+    background-image: radial-gradient(circle, #bdd7f5 1px, transparent 1px);
+    background-size: 24px 24px;
     color: var(--ink);
     overflow-x: hidden;
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(28px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
-
 @keyframes pulse-ring {
     0%   { transform: scale(1);   opacity: 0.6; }
     100% { transform: scale(1.8); opacity: 0; }
@@ -59,7 +47,7 @@ body {
     position: sticky; top: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0.9rem 1.5rem;
-    background: rgba(248,250,252,0.9);
+    background: rgba(239,246,255,0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
@@ -109,7 +97,7 @@ body {
     display: inline-flex; align-items: center; gap: 0.45rem;
     border: 1px solid var(--border); background: var(--white);
     border-radius: 2rem; padding: 0.3rem 0.9rem;
-    font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
+    font-size: 0.95rem; font-weight: 600; color: var(--ink-soft);
     margin-bottom: 1.2rem; letter-spacing: 0.03em;
 }
 
@@ -117,7 +105,6 @@ body {
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--teal); position: relative; flex-shrink: 0;
 }
-
 .live-dot::after {
     content: ''; position: absolute; inset: 0; border-radius: 50%;
     background: var(--teal); animation: pulse-ring 1.5s ease-out infinite;
@@ -139,12 +126,7 @@ body {
     max-width: 420px; margin: 0 auto 1.8rem;
 }
 
-.hero-cta {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
+.hero-cta { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 
 .btn-hero {
     background: var(--primary); color: white; border: none;
@@ -213,22 +195,31 @@ body {
 
 /* ── CAROUSEL ────────────────────────────────────────────────── */
 .carousel-wrap {
-    margin: 0 -1.25rem 2rem;   /* bleed to edges on mobile */
+    margin: 0 -1.25rem 2rem;
 }
 
 .carousel-track-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
     scrollbar-width: none;
-    cursor: grab;
+    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 .carousel-track-wrap::-webkit-scrollbar { display: none; }
-.carousel-track-wrap.dragging { cursor: grabbing; user-select: none; }
+
+@keyframes autoScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
 
 .carousel-track {
     display: flex; gap: 0.9rem;
-    padding: 0.25rem 1.25rem 1rem;
+    padding: 0.5rem 1.25rem 1.2rem;
     width: max-content;
+    animation: autoScroll 22s linear infinite;
+}
+
+.carousel-track:hover {
+    animation-play-state: paused;
 }
 
 .carousel-card {
@@ -239,13 +230,18 @@ body {
     box-shadow: var(--shadow);
     text-decoration: none; color: inherit;
     overflow: hidden;
-    transition: transform 0.25s, box-shadow 0.25s;
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s;
     display: flex; flex-direction: column;
+    transform-origin: bottom center;
 }
-.carousel-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+.carousel-card:hover {
+    transform: rotate(3deg) translateY(-8px);
+    box-shadow: var(--shadow-md);
+    position: relative; z-index: 2;
+}
 
 .card-img {
-    height: 130px;
+    height: 180px;
     background-size: cover; background-position: center;
     background-color: #e2e8f0;
     position: relative;
@@ -253,19 +249,19 @@ body {
 
 .card-chip {
     position: absolute; top: 0.6rem; left: 0.6rem;
-    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
-    text-transform: uppercase; padding: 0.2rem 0.6rem;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.3rem 0.8rem;
     border-radius: 2rem; color: white;
 }
 
 .card-body {
-    padding: 0.85rem 1rem 1.1rem;
+    padding: 1rem 1.1rem 1.3rem;
     background: var(--card-bg, var(--white));
     flex: 1;
 }
 
-.card-title { font-weight: 700; font-size: 0.88rem; color: var(--ink); margin-bottom: 0.25rem; }
-.card-sub   { font-size: 0.75rem; color: var(--ink-soft); line-height: 1.5; }
+.card-title { font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+.card-sub   { display: none; }
 
 /* ── HOW IT WORKS ────────────────────────────────────────────── */
 .how-card {
@@ -315,21 +311,12 @@ body {
 
 /* ── RESPONSIVE ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
-    #index-main {
-        padding-bottom: 5.5rem;
-    }
-
-    .bottom-nav {
-        display: block;
-    }
-
-    #top-nav .nav-actions {
-        display: none;
-    }
-
-    .hero {
-        padding: 2rem 0 1.4rem;
-    }
+    #index-main { padding-bottom: 5.5rem; }
+    .bottom-nav { display: block; }
+    #top-nav .nav-actions { display: none; }
+    .hero { padding: 2rem 0 1.4rem; }
+    .carousel-card { flex: 0 0 200px; width: 200px; }
+    .card-img { height: 150px; }
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
@@ -343,7 +330,7 @@ body {
     .carousel-wrap { margin: 0 -3rem 2rem; }
     .carousel-track { padding: 0.25rem 3rem 1rem; }
     .carousel-card  { flex: 0 0 260px; width: 260px; }
-    .card-img { height: 160px; }
+    .card-img { height: 200px; }
     .stats-strip { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
     .hero-img-strip { height: 220px; }
 }

@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages</title>
+    <title>Messages – Smart Campus</title>
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="chat.css">
     <script src="https://kit.fontawesome.com/44fe28e16d.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
+    <!-- ── Top bar (matches home.html) ── -->
+    <header id="topbar">
+        <a href="home.html" id="brand" style="text-decoration:none;">Smart Campus</a>
+        <div class="topbar-actions" style="margin-left:auto;">
+            <button id="profile-btn" class="icon-btn" title="Profile" onclick="window.location='profile.html'">
+                <i class="fa-solid fa-user"></i>
+            </button>
+        </div>
+    </header>
+
     <div id="app">
 
         <!-- ── Sidebar ── -->
         <aside id="sidebar">
             <div id="sidebar-header">
-                <a href="home.html" id="back-to-home" title="Back to marketplace">
-                    <i class="fa-solid fa-angle-left"></i>
-                </a>
                 <span id="sidebar-title">Messages</span>
                 <button id="new-chat-btn" title="New message">
                     <i class="fa-solid fa-pen-to-square"></i>
+                    <span>New</span>
                 </button>
             </div>
             <ul id="conv-list"></ul>
@@ -39,8 +47,10 @@
             <div id="chat-view" class="hidden">
 
                 <div id="chat-header">
-                    <button id="back-btn" title="Back to conversations">
-                        <i class="fa-solid fa-angle-left"></i>
+                    <!-- Back to listing (or sidebar on mobile) -->
+                    <button id="back-btn" title="Back">
+                        <i class="fa-solid fa-door-open"></i>
+                        <i class="fa-solid fa-arrow-left" id="back-arrow"></i>
                     </button>
                     <div id="chat-header-info">
                         <div id="chat-avatar"></div>
@@ -49,31 +59,23 @@
                             <div id="chat-status">Active now</div>
                         </div>
                     </div>
-                    <div id="chat-header-actions">
-                        <button class="hdr-btn" id="view-listing-btn" title="View listing" style="display:none">
-                            <i class="fa-solid fa-tag"></i>
-                        </button>
-                    </div>
                 </div>
 
-                <!-- Listing context banner — shown when coming from a listing -->
-                <div id="listing-banner" class="hidden">
-                    <div id="banner-img"><i class="fa-regular fa-image"></i></div>
-                    <div id="banner-info">
-                        <div id="banner-title"></div>
-                        <div id="banner-price"></div>
+                <!-- Transaction banner — seller: confirm / buyer: buy -->
+                <div id="transaction-banner" class="hidden">
+                    <div id="txn-item-info">
+                        <div id="txn-img-wrap"></div>
+                        <div id="txn-text">
+                            <div id="txn-title"></div>
+                            <div id="txn-price"></div>
+                        </div>
                     </div>
-                    <button id="buy-now-btn" class="buy-btn">
-                        Buy Now
-                    </button>
+                    <div id="txn-action-area"></div>
                 </div>
 
                 <div id="messages"></div>
 
                 <form id="msg-form">
-                    <button type="button" id="attach-btn" class="form-icon-btn" title="Attach listing">
-                        <i class="fa-solid fa-paperclip"></i>
-                    </button>
                     <input type="text" id="msg-input" placeholder="Message..." autocomplete="off">
                     <button type="submit" id="send-btn">
                         <i class="fa-solid fa-paper-plane"></i>
@@ -97,6 +99,19 @@
                 <input type="text" id="modal-search" placeholder="Search people...">
             </div>
             <ul id="user-list"></ul>
+        </div>
+    </div>
+
+    <!-- Confirm sale modal -->
+    <div id="confirm-sale-modal" class="hidden">
+        <div id="confirm-sale-box">
+            <div id="confirm-sale-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div id="confirm-sale-title">Confirm Sale</div>
+            <div id="confirm-sale-msg">Are you sure you want to confirm this sale? This will notify the buyer they can proceed to payment.</div>
+            <div id="confirm-sale-actions">
+                <button id="confirm-sale-yes">Yes, confirm</button>
+                <button id="confirm-sale-no">Cancel</button>
+            </div>
         </div>
     </div>
 

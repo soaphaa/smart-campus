@@ -23,28 +23,14 @@ async function loadStats() {
     }
 }
 
-// ── Drag-to-scroll for carousel ───────────────────────────────
-function initCarouselDrag() {
-    const wrap = document.querySelector(".carousel-track-wrap");
-    if (!wrap) return;
-
-    let isDown = false, startX = 0, scrollLeft = 0;
-
-    wrap.addEventListener("mousedown", e => {
-        isDown = true;
-        wrap.classList.add("dragging");
-        startX     = e.pageX - wrap.offsetLeft;
-        scrollLeft = wrap.scrollLeft;
-    });
-    wrap.addEventListener("mouseleave", () => { isDown = false; wrap.classList.remove("dragging"); });
-    wrap.addEventListener("mouseup",    () => { isDown = false; wrap.classList.remove("dragging"); });
-    wrap.addEventListener("mousemove",  e => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x    = e.pageX - wrap.offsetLeft;
-        wrap.scrollLeft = scrollLeft - (x - startX) * 1.4;
+// ── Duplicate cards for seamless infinite auto-scroll ─────────
+function initCarousel() {
+    const track = document.getElementById("carousel");
+    if (!track) return;
+    Array.from(track.children).forEach(card => {
+        track.appendChild(card.cloneNode(true));
     });
 }
 
 loadStats();
-initCarouselDrag();
+initCarousel();
