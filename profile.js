@@ -18,9 +18,6 @@ import {
 // DOM REFERENCES
 // ─────────────────────────────────────────────────────────
 
-// — Topbar
-const logoutBtn           = document.getElementById("logout-btn");
-
 // — Sidebar / avatar
 const avatarRing          = document.getElementById("avatar-ring");
 const avatarInitials      = document.getElementById("avatar-initials");
@@ -30,8 +27,8 @@ const sidebarName         = document.getElementById("sidebar-name");
 const sidebarSchool       = document.getElementById("sidebar-school");
 const sidebarJoined       = document.getElementById("sidebar-joined");
 
-// — Tab nav
-const navItems            = document.querySelectorAll(".nav-item");
+// — Tab nav (only buttons with a data-tab attribute; excludes logout)
+const navItems            = document.querySelectorAll(".nav-item[data-tab]");
 const tabPanels           = document.querySelectorAll(".tab-panel");
 
 // — Profile tab: personal info
@@ -254,6 +251,8 @@ function compressAvatar(file) {
 // ─────────────────────────────────────────────────────────
 
 function wireTabNav() {
+    const mobileNavBtns = document.querySelectorAll(".mobile-nav-btn[data-tab]");
+
     function activateTab(tabName) {
         const match = [...navItems].find(b => b.dataset.tab === tabName);
         if (!match) return;
@@ -262,9 +261,20 @@ function wireTabNav() {
         match.classList.add("active");
         document.getElementById(`tab-${tabName}`).classList.add("active");
         history.replaceState(null, "", `#${tabName}`);
+
+        // Sync mobile bottom nav active state
+        mobileNavBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
     }
 
     navItems.forEach(btn => {
+        btn.addEventListener("click", () => {
+            activateTab(btn.dataset.tab);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    });
+
+    // Mobile bottom nav buttons
+    mobileNavBtns.forEach(btn => {
         btn.addEventListener("click", () => {
             activateTab(btn.dataset.tab);
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -623,6 +633,7 @@ function applyListingsFilter() {
     });
 
     listingsCountBadge.textContent = myListings.filter(l => !l.sold && !l.expired).length;
+    syncMobileBadge("mobile-listings-count", listingsCountBadge.textContent);
 
     if (items.length === 0) {
         const msgs = {
@@ -710,6 +721,7 @@ async function renderFavourites() {
     }
 
     favCountBadge.textContent = myFavourites.length;
+    syncMobileBadge("mobile-fav-count", myFavourites.length);
 
     if (myFavourites.length === 0) {
         favouritesGrid.innerHTML = `<div class="empty-state">
@@ -758,6 +770,7 @@ async function renderFavourites() {
                 await deleteDoc(doc(database, "users", ME.uid, "favourites", favDocId));
                 myFavourites = myFavourites.filter(f => f.favDocId !== favDocId);
                 favCountBadge.textContent = myFavourites.length;
+                syncMobileBadge("mobile-fav-count", myFavourites.length);
                 btn.closest(".listing-card").remove();
                 if (myFavourites.length === 0) renderFavourites();
                 showToast("Removed from favourites.");
@@ -792,6 +805,7 @@ async function renderOrders() {
     }
 
     ordersCountBadge.textContent = myOrders.filter(o => o.status === "in_progress").length;
+    syncMobileBadge("mobile-orders-count", ordersCountBadge.textContent);
     applyOrdersFilter();
 }
 
@@ -873,15 +887,42 @@ function applyOrdersFilter() {
 // ─────────────────────────────────────────────────────────
 
 function wireLogout() {
-    logoutBtn.addEventListener("click", async () => {
-        await signOut(authentication);
-        window.location.href = "index.html";
-    });
+    const doLogout = () => {
+        showConfirm(
+            "Log out?",
+            "You'll be signed out of your session.",
+            async () => {
+                try {
+                    await signOut(authentication);
+                    window.location.href = "index.html";
+                } catch (error) {
+                    console.error("Logout failed:", error);
+                    showToast("Couldn't log out. Try again.", "error");
+                }
+            }
+        );
+    };
+
+    // Sidebar logout button
+    const sidebarLogoutBtn = document.getElementById("sidebar-logout-btn");
+    if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener("click", doLogout);
+
+    // Mobile bottom-nav logout button
+    const mobileLogoutBtn = document.getElementById("mobile-logout-btn");
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener("click", doLogout);
 }
 
 // ─────────────────────────────────────────────────────────
 // UI HELPERS
 // ─────────────────────────────────────────────────────────
+
+function syncMobileBadge(id, count) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const n = parseInt(count, 10) || 0;
+    el.textContent = n;
+    el.dataset.count = n;
+}
 
 function showToast(msg, type = "success") {
     toastEl.className       = `show toast-${type}`;

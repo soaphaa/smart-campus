@@ -128,11 +128,12 @@ body {
 }
 
 #detail-title {
-    font-size: 2.2rem;
+    font-size: 2.8rem;
     font-weight: 600;
     color: var(--text-main);
     margin: 0;
     line-height: 1;
+    text-transform: capitalize;
 }
 
 .detail-cat-badge {
@@ -264,6 +265,7 @@ body {
 
 /* ── Actions ─────────────────────────────────────────────── */
 #actions {
+    margin-top: 1rem;
     display: flex;
     gap: 0.6rem;
 }

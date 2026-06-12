@@ -23,9 +23,6 @@
             <button id="profile-btn" class="icon-btn active-icon" title="Profile">
                 <i class="fa-solid fa-user"></i>
             </button>
-            <button id="logout-btn" class="icon-btn" title="Log out">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
         </div>
     </header>
 
@@ -77,6 +74,11 @@
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Marketplace
             </button>
+
+            <button id="sidebar-logout-btn" class="nav-item logout-style">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Log Out</span>
+            </button>
         </aside>
 
         <!-- Main content -->
@@ -110,7 +112,8 @@
                         <div class="field-row">
                             <label>School</label>
                             <div class="field-display" id="display-school"></div>
-                            <input class="field-input hidden" id="input-school" type="text" placeholder="Your school or university">
+                            <input class="field-input hidden" id="input-school" type="text"
+                                placeholder="Your school or university">
                         </div>
                     </div>
 
@@ -144,11 +147,13 @@
                         <div id="email-change-form" class="hidden">
                             <div class="field-row">
                                 <label>New Email</label>
-                                <input class="field-input" id="input-new-email" type="email" placeholder="new@example.com">
+                                <input class="field-input" id="input-new-email" type="email"
+                                    placeholder="new@example.com">
                             </div>
                             <div class="info-notice">
                                 <i class="fa-solid fa-circle-info"></i>
-                                We'll send a confirmation link to your new address. Your email won't change until you click it.
+                                We'll send a confirmation link to your new address. Your email won't change until you
+                                click it.
                             </div>
                         </div>
                     </div>
@@ -162,7 +167,8 @@
                     <div id="email-pending" class="hidden">
                         <div class="info-notice pending">
                             <i class="fa-solid fa-envelope"></i>
-                            Verification sent to <strong id="pending-email-display"></strong>. Check your inbox and click the link to confirm.
+                            Verification sent to <strong id="pending-email-display"></strong>. Check your inbox and
+                            click the link to confirm.
                             <button class="link-btn" id="email-resend">Resend</button>
                         </div>
                     </div>
@@ -176,7 +182,7 @@
                             <p>Keep your account safe with a strong password.</p>
                         </div>
                         <button class="edit-toggle-btn" id="pwd-edit-btn">
-                            <i class="fa-solid fa-pen"></i> Change
+                            <i class="fa-solid fa-pen"></i> Edit
                         </button>
                     </div>
 
@@ -184,23 +190,29 @@
                         <div class="field-row">
                             <label>Current Password</label>
                             <div class="pwd-wrap">
-                                <input class="field-input" id="input-pwd-current" type="password" placeholder="Enter current password">
-                                <button class="pwd-toggle" data-target="input-pwd-current" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                                <input class="field-input" id="input-pwd-current" type="password"
+                                    placeholder="Enter current password">
+                                <button class="pwd-toggle" data-target="input-pwd-current" title="Show/hide"><i
+                                        class="fa-regular fa-eye"></i></button>
                             </div>
                         </div>
                         <div class="field-row">
                             <label>New Password</label>
                             <div class="pwd-wrap">
-                                <input class="field-input" id="input-pwd-new" type="password" placeholder="At least 8 characters">
-                                <button class="pwd-toggle" data-target="input-pwd-new" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                                <input class="field-input" id="input-pwd-new" type="password"
+                                    placeholder="At least 8 characters">
+                                <button class="pwd-toggle" data-target="input-pwd-new" title="Show/hide"><i
+                                        class="fa-regular fa-eye"></i></button>
                             </div>
                             <div class="pwd-strength" id="pwd-strength"></div>
                         </div>
                         <div class="field-row">
                             <label>Confirm New Password</label>
                             <div class="pwd-wrap">
-                                <input class="field-input" id="input-pwd-confirm" type="password" placeholder="Repeat new password">
-                                <button class="pwd-toggle" data-target="input-pwd-confirm" title="Show/hide"><i class="fa-regular fa-eye"></i></button>
+                                <input class="field-input" id="input-pwd-confirm" type="password"
+                                    placeholder="Repeat new password">
+                                <button class="pwd-toggle" data-target="input-pwd-confirm" title="Show/hide"><i
+                                        class="fa-regular fa-eye"></i></button>
                             </div>
                         </div>
                     </div>
@@ -235,9 +247,9 @@
                 </div>
 
                 <div class="sub-tabs" id="listings-sub-tabs">
-                    <button class="sub-tab active" data-filter="active">Active</button>
-                    <button class="sub-tab" data-filter="sold">Sold</button>
-                    <button class="sub-tab" data-filter="expired">Expired</button>
+                    <button class="sub-tab active status-active" data-filter="active">Active</button>
+                    <button class="sub-tab status-sold" data-filter="sold">Sold</button>
+                    <button class="sub-tab status-expired" data-filter="expired">Expired</button>
                 </div>
 
                 <div id="listings-grid" class="items-grid"></div>
@@ -247,7 +259,6 @@
             <section class="tab-panel" id="tab-favourites">
                 <div class="panel-header">
                     <h1>Favourites</h1>
-                    <p class="panel-sub">Items you've saved for later.</p>
                 </div>
                 <div id="favourites-grid" class="items-grid"></div>
             </section>
@@ -256,13 +267,12 @@
             <section class="tab-panel" id="tab-orders">
                 <div class="panel-header">
                     <h1>Orders</h1>
-                    <p class="panel-sub">Track your buying activity.</p>
                 </div>
 
                 <div class="sub-tabs" id="orders-sub-tabs">
-                    <button class="sub-tab active" data-filter="in_progress">In Progress</button>
-                    <button class="sub-tab" data-filter="completed">Completed</button>
-                    <button class="sub-tab" data-filter="cancelled">Cancelled</button>
+                    <button class="sub-tab active status-generic" data-filter="in_progress">In Progress</button>
+                    <button class="sub-tab status-generic" data-filter="completed">Completed</button>
+                    <button class="sub-tab status-generic" data-filter="cancelled">Cancelled</button>
                 </div>
 
                 <div id="orders-list" class="orders-list"></div>
@@ -270,6 +280,33 @@
 
         </main>
     </div>
+
+    <!-- Mobile bottom nav (phones only, ≤480px) -->
+    <nav id="mobile-bottom-nav">
+        <button class="mobile-nav-btn active" data-tab="profile">
+            <i class="fa-solid fa-circle-user"></i>
+            <span>Profile</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="listings">
+            <i class="fa-solid fa-tag"></i>
+            <span>Listings</span>
+            <span class="mobile-nav-badge" id="mobile-listings-count" data-count="0">0</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="favourites">
+            <i class="fa-regular fa-heart"></i>
+            <span>Saved</span>
+            <span class="mobile-nav-badge" id="mobile-fav-count" data-count="0">0</span>
+        </button>
+        <button class="mobile-nav-btn" data-tab="orders">
+            <i class="fa-solid fa-box"></i>
+            <span>Orders</span>
+            <span class="mobile-nav-badge" id="mobile-orders-count" data-count="0">0</span>
+        </button>
+        <button class="mobile-nav-btn" id="mobile-logout-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+        </button>
+    </nav>
 
     <!-- Toast notification -->
     <div id="toast" class="hidden">
@@ -285,11 +322,12 @@
             <p id="modal-body">This action cannot be undone.</p>
             <div class="modal-actions">
                 <button class="btn-ghost" id="modal-cancel">Cancel</button>
-                <button class="btn-danger" id="modal-confirm">Delete</button>
+                <button class="btn-danger" id="modal-confirm">Log Out</button>
             </div>
         </div>
     </div>
 
     <script type="module" src="profile.js"></script>
 </body>
+
 </html>

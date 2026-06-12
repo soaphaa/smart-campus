@@ -19,17 +19,10 @@ const newChatBtn  = document.getElementById("new-chat-btn");
 const modal       = document.getElementById("new-chat-modal");
 const modalClose  = document.getElementById("modal-close");
 const userList    = document.getElementById("user-list");
-const logoutBtn   = document.getElementById("logout-btn");
 
 let ME           = null;
 let activeConvId = null;
 let stopListening = null;
-
-// ── Logout ────────────────────────────────────────────────
-logoutBtn.addEventListener("click", async () => {
-    await signOut(authentication);
-    window.location.href = "index.html";
-});
 
 // ── Auth ──────────────────────────────────────────────────
 onAuthStateChanged(authentication, async user => {

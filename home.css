@@ -33,6 +33,10 @@ button {
     cursor: pointer;
 }
 
+input {
+    font-family: inherit;
+}
+
 /* ── Top bar ─────────────────────────────────────────────── */
 #topbar {
     width: 100%;
@@ -52,7 +56,7 @@ button {
 
 #brand {
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
     -webkit-background-clip: text;
     background-clip: text;
@@ -64,16 +68,16 @@ button {
 
 #search-wrap {
     flex: 1;
-    max-width: 600px;
+    max-width: 700px;
     position: relative;
 }
 
 #search-input {
     width: 100%;
-    padding: 0.6rem 1rem 0.6rem 2.4rem;
-    border: 1px solid var(--border-color);
+    padding: 0.6rem 1rem 0.6rem 3.2rem;
+    border: 1.5px solid var(--border-color);
     border-radius: var(--border-radius);
-    font-size: 0.95rem;
+    font-size: 1.3rem;
     background-color: #fff;
     outline: none;
     transition: all 0.2s ease;
@@ -169,7 +173,7 @@ button {
 .topbar-actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
 .icon-btn {
@@ -180,7 +184,7 @@ button {
     background: transparent;
     box-shadow: none;
     color: var(--text-main);
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -204,7 +208,7 @@ button {
     background: #fff;
     color: var(--text-main);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -238,7 +242,7 @@ button {
     background: linear-gradient(135deg, var(--primary-color), var(--text-accent));
     color: #fff;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     transition: filter 0.2s ease, transform 0.15s ease;
 }
@@ -659,7 +663,7 @@ button {
 }
 
 .card-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: var(--text-main);
     line-height: 1.3;
@@ -667,6 +671,7 @@ button {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-transform: capitalize;
 }
 
 .card-price {
@@ -676,7 +681,7 @@ button {
 }
 
 .card-price .unit {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text-prompt);
     font-weight: 500;
     margin-left: 0.15rem;
@@ -688,7 +693,7 @@ button {
     align-items: center;
     margin-top: auto;
     padding-top: 0.2rem;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     color: var(--text-prompt);
 }
 

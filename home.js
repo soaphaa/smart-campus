@@ -12,7 +12,7 @@ const grid = document.getElementById("grid");
 const searchInput = document.getElementById("search-input");
 const categoryRow = document.getElementById("category-row");
 const sellBtn = document.getElementById("sell-btn");
-const logoutBtn = document.getElementById("logout-btn");
+// const logoutBtn = document.getElementById("logout-btn");
 
 const filtersBtn = document.getElementById("filters-btn");
 const filterCount = document.getElementById("filter-count");
@@ -505,10 +505,10 @@ grid.addEventListener("click", async e => {
     window.location.href = `listing.html?id=${card.dataset.id}`;
 });
 
-logoutBtn.addEventListener("click", async () => {
-    await signOut(authentication);
-    window.location.href = "index.html";
-});
+// logoutBtn.addEventListener("click", async () => {
+//     await signOut(authentication);
+//     window.location.href = "index.html";
+// });
 
 // ── Filter drawer ────────────────────────────────────────
 filtersBtn.addEventListener("click", openDrawer);
